@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1334</width>
+    <height>1417</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>546</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="WindSpeedLabel">
+         <property name="text">
+          <string>V, м/с</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="WindSpeedSpinBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="SeasonLabel">
+         <property name="text">
+          <string>Период года</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="SeasonComboBox">
+         <item>
+          <property name="text">
+           <string>Тёплый</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Холодный</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLabel" name="TempInsideLabel">
+         <property name="text">
+          <string>tв, ˚С</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="TempInsideValue">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="TempOutsideLabel">
+         <property name="text">
+          <string>tн, ˚С</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="TempOutsideValue">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="CityLayout">
+       <item>
+        <widget class="QLabel" name="City">
+         <property name="text">
+          <string>Город</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="CityComboBox"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>923</width>
+      <height>372</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="RoomGridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="RoomLabel">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Помещения&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTableWidget" name="RoomTable">
+       <property name="minimumSize">
+        <size>
+         <width>921</width>
+         <height>341</height>
+        </size>
+       </property>
+       <row>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>№ помещения</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Наименование помещения</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>tв, ˚с</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Тип помещения</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Площадь помещения, м2</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Q, люди</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Q, приборы</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Q, светильники</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Q общ</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="0" column="5">
+        <property name="text">
+         <string>70</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>430</y>
+      <width>623</width>
+      <height>312</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="PeopleGridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="PeopleLabel">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Люди&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTableWidget" name="PeopleTable">
+       <property name="minimumSize">
+        <size>
+         <width>621</width>
+         <height>281</height>
+        </size>
+       </property>
+       <row>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>2</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>№ помещения</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Пол</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Тип работы</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Тип одежды</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Кол-во</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Q, чел</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string>м</string>
+        </property>
+       </item>
+       <item row="0" column="2">
+        <property name="text">
+         <string>легкая</string>
+        </property>
+       </item>
+       <item row="0" column="3">
+        <property name="text">
+         <string>легкая</string>
+        </property>
+       </item>
+       <item row="0" column="4">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="0" column="5">
+        <property name="text">
+         <string>30</string>
+        </property>
+       </item>
+       <item row="1" column="0">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="1" column="1">
+        <property name="text">
+         <string>м</string>
+        </property>
+       </item>
+       <item row="1" column="2">
+        <property name="text">
+         <string>легкая</string>
+        </property>
+       </item>
+       <item row="1" column="3">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="1" column="4">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="1" column="5">
+        <property name="text">
+         <string>40</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>1080</y>
+      <width>523</width>
+      <height>272</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="LightingGridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="LightingLabel">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Светильники&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTableWidget" name="LightingTable">
+       <property name="minimumSize">
+        <size>
+         <width>521</width>
+         <height>241</height>
+        </size>
+       </property>
+       <row>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>№ помещения</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Тип светильника</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Назначение светильника</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Кол-во</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Q свет</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string>Встроеннный</string>
+        </property>
+       </item>
+       <item row="0" column="2">
+        <property name="text">
+         <string>Комбинированное</string>
+        </property>
+       </item>
+       <item row="0" column="3">
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item row="0" column="4">
+        <property name="text">
+         <string>30</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>760</y>
+      <width>623</width>
+      <height>302</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="EquipmentGridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="EquipmentLabel">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Приборы&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTableWidget" name="EquipmentTable">
+       <property name="minimumSize">
+        <size>
+         <width>621</width>
+         <height>271</height>
+        </size>
+       </property>
+       <row>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>№ помещения</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Тип прибора</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Загрузка прибора</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Мощность прибора</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Кол-во</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Q прибора</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1334</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="open_file"/>
+    <addaction name="save_file"/>
+    <addaction name="close_file"/>
+   </widget>
+   <widget class="QMenu" name="about">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="clean">
+    <property name="title">
+     <string>Очистить</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="create">
+    <property name="title">
+     <string>Создать</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="create"/>
+   <addaction name="clean"/>
+   <addaction name="about"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="open_file">
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+  </action>
+  <action name="save_file">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="close_file">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Закрыть</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
