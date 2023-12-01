@@ -18,7 +18,14 @@ class RoomsTable():
         self.MakeRoomCellReadOnly()
 
     def RemoveRoomsRow(self):
-        self.RoomsTableWidget.removeRow(self.RoomsTableWidget.rowCount()-1)
+        if self.RoomsTableWidget.rowCount() == 1:
+            message_box = QMessageBox()
+            message_box.information(
+                None, "Единственная строка", "Вы не можете удалить единственную строку в таблице.")
+            message_box.setFixedSize(500, 200)
+            return
+        else:
+            self.RoomsTableWidget.removeRow(self.RoomsTableWidget.rowCount()-1)
 
     # Неизменяемость клеток, в которых расчитывается Q для таблицы Помещения
     def MakeRoomCellReadOnly(self):
@@ -258,7 +265,6 @@ class RoomsTable():
             item.setData(0, f'{summ_of_heat_input}')
             self.RoomsTableWidget.setItem(room_row, 8, item)
         self.MakeRoomCellReadOnly()
-        print(total_room_number)
 
     def RoomNameValidation(self):
         col = 1
@@ -276,3 +282,7 @@ class RoomsTable():
                 message_box.setFixedSize(500, 200)
                 return True
         return False
+
+    def ClearRoomsTable(self):
+        self.RoomsTableWidget.setRowCount(0)
+        self.AddRoomsRow()

@@ -113,3 +113,7 @@ class EquipmentTable:
         for row in range(self.EquipmentTableWidget.rowCount()):
             self.EquipmentTableWidget.cellWidget(
                 row, 1).activated.connect(self.SetPowerForEquipmentType)
+
+    def ClearEquipmentTable(self):
+        self.EquipmentTableWidget.setRowCount(0)
+        self.AddEquipmentRow()

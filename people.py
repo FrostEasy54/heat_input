@@ -20,7 +20,8 @@ class PeopleTable():
             message_box.setFixedSize(500, 200)
             return
         else:
-            self.PeopleTableWidget.removeRow(self.PeopleTableWidget.rowCount()-1)
+            self.PeopleTableWidget.removeRow(
+                self.PeopleTableWidget.rowCount()-1)
 
         # Неизменяемость клеток, в которых расчитывается Q для таблицы Люди
     def MakePeopleCellReadOnly(self):
@@ -99,7 +100,7 @@ class PeopleTable():
                 clothes_coeff = 0.65
             else:
                 clothes_coeff = 0.40
-            wind_speed = 0.3
+            wind_speed = self.WindSpeedDoubleSpinBox.value()
             t_inside = 18
             heat_input = people_count * sex_coeff * work_coeff * clothes_coeff * \
                 (2.5 + 10.36 * wind_speed ** 0.5)*(35 - t_inside)
@@ -108,3 +109,7 @@ class PeopleTable():
             item.setData(0, f"{heat_input}")
             self.PeopleTableWidget.setItem(row, 5, item)
             self.MakePeopleCellReadOnly()
+
+    def ClearPeopleTable(self):
+        self.PeopleTableWidget.setRowCount(0)
+        self.AddPeopleRow()

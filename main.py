@@ -27,7 +27,15 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
             QHeaderView.ResizeMode.Stretch)
 
         # Установка значений движения скорости ветра в помещении
-        self.setWindSpeed()
+        self.SetWindSpeed()
+        self.SeasonComboBox.currentTextChanged.connect(self.SetWindSpeed)
+
+        # Соединение кнопок очистки
+        self.actionClearRooms.triggered.connect(self.ClearRoomsTable)
+        self.actionClearPeople.triggered.connect(self.ClearPeopleTable)
+        self.actionClearEquipment.triggered.connect(self.ClearEquipmentTable)
+        self.actionClearLamps.triggered.connect(self.ClearLampsTable)
+        self.actionClearAll.triggered.connect(self.ClearAllTables)
 
         # Добавление и удаление новых рядов для таблицы Помещения
         self.AddRowRoomsPushButton.clicked.connect(self.AddRoomsRow)
@@ -86,10 +94,20 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         # Расчёт теплопоступлений от Светильника на листе Светильники
         self.LampsHeatInputPushButton.clicked.connect(self.LampsHeatInput)
 
-    def setWindSpeed(self):
-        self.WindSpeedDoubleSpinBox.setMinimum(0.13)
-        self.WindSpeedDoubleSpinBox.setMaximum(0.30)
-        self.WindSpeedDoubleSpinBox.setSingleStep(0.05)
+    def SetWindSpeed(self):
+        if self.SeasonComboBox.currentText() == "Теплый":
+            self.WindSpeedDoubleSpinBox.setMinimum(0.1)
+            self.WindSpeedDoubleSpinBox.setMaximum(0.6)
+        else:
+            self.WindSpeedDoubleSpinBox.setMinimum(0.0)
+            self.WindSpeedDoubleSpinBox.setMaximum(0.5)
+        self.WindSpeedDoubleSpinBox.setSingleStep(0.1)
+
+    def ClearAllTables(self):
+        self.ClearPeopleTable()
+        self.ClearRoomsTable()
+        self.ClearEquipmentTable()
+        self.ClearLampsTable()
 
 
 def main():

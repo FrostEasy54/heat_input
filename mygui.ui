@@ -33,7 +33,7 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="Rooms">
            <attribute name="title">
@@ -505,13 +505,19 @@
      <string>Справка</string>
     </property>
    </widget>
-   <widget class="QMenu" name="clean">
+   <widget class="QMenu" name="clear">
     <property name="title">
      <string>Очистить</string>
     </property>
+    <addaction name="actionClearRooms"/>
+    <addaction name="actionClearPeople"/>
+    <addaction name="actionClearEquipment"/>
+    <addaction name="actionClearLamps"/>
+    <addaction name="separator"/>
+    <addaction name="actionClearAll"/>
    </widget>
    <addaction name="menu"/>
-   <addaction name="clean"/>
+   <addaction name="clear"/>
    <addaction name="about"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -534,6 +540,31 @@
    </property>
    <property name="text">
     <string>Закрыть</string>
+   </property>
+  </action>
+  <action name="actionClearRooms">
+   <property name="text">
+    <string>Очистить Помещения</string>
+   </property>
+  </action>
+  <action name="actionClearPeople">
+   <property name="text">
+    <string>Очистить Люди</string>
+   </property>
+  </action>
+  <action name="actionClearEquipment">
+   <property name="text">
+    <string>Очистить Оборудование</string>
+   </property>
+  </action>
+  <action name="actionClearLamps">
+   <property name="text">
+    <string>Очистить Светильники</string>
+   </property>
+  </action>
+  <action name="actionClearAll">
+   <property name="text">
+    <string>Очистить Всё</string>
    </property>
   </action>
  </widget>

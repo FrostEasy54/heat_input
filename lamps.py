@@ -90,3 +90,7 @@ class LampsTable:
             item.setData(0, f"{heat_input}")
             self.LampsTableWidget.setItem(row, 4, item)
             self.MakeLampsCellReadOnly()
+
+    def ClearLampsTable(self):
+        self.LampsTableWidget.setRowCount(0)
+        self.AddLampsRow()
