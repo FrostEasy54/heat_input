@@ -15,7 +15,9 @@ class RoomsTable():
         self.RoomTypeComboBox()
         self.RoomNumberSpinBox()
         self.RoomAreaDoubleSpinBox()
+        self.SetRoomInnerTemp()
         self.MakeRoomCellReadOnly()
+        self.MakeRoomTempCellReadOnly()
 
     def RemoveRoomsRow(self):
         if self.RoomsTableWidget.rowCount() == 1:
@@ -37,6 +39,16 @@ class RoomsTable():
                     item = QTableWidgetItem()
                     self.RoomsTableWidget.setItem(row, col, item)
                 item.setFlags(flags)
+
+    def MakeRoomTempCellReadOnly(self):
+        col = 3
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
+        for row in range(self.RoomsTableWidget.rowCount()):
+            item = self.RoomsTableWidget.item(row, col)
+            if item is None:
+                item = QTableWidgetItem()
+                self.RoomsTableWidget.setItem(row, col, item)
+            item.setFlags(flags)
 
     def RoomTypeComboBox(self):
         # Указываем столбец, для которого нужно установить combobox
@@ -67,6 +79,17 @@ class RoomsTable():
         sb = QDoubleSpinBox()
         sb.setMaximum(1000)
         self.RoomsTableWidget.setCellWidget(current_row, col, sb)
+
+    def SetRoomInnerTemp(self):
+        col = 3
+        if float(self.TempOutsideValueLabel.text()[:-2]) > -15:
+            temp_inside = 18
+        else:
+            temp_inside = 20
+        for room_row in range(self.RoomsTableWidget.rowCount()):
+            temp_item = QTableWidgetItem()
+            temp_item.setData(0, f'{temp_inside}')
+            self.RoomsTableWidget.setItem(room_row, col, temp_item)
 
     def AddPeopleHeatInput(self):
         for room_row in range(self.RoomsTableWidget.rowCount()):

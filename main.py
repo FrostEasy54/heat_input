@@ -1,5 +1,6 @@
 import os
 import sys
+import openpyxl
 from PyQt6.QtWidgets import QMainWindow, QHeaderView, QApplication
 from PyQt6 import uic
 from rooms import RoomsTable
@@ -25,7 +26,9 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         ).setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.LampsTableWidget.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch)
-
+        # Установка списка городов и температуры в таблицу
+        self.GetClimateCity()
+        self.UpdateTempLabel(0)
         # Установка значений движения скорости ветра в помещении
         self.SetWindSpeed()
         self.SeasonComboBox.currentTextChanged.connect(self.SetWindSpeed)
@@ -44,7 +47,10 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         self.RoomTypeComboBox()
         self.RoomNumberSpinBox()
         self.RoomAreaDoubleSpinBox()
+        self.SetRoomInnerTemp()
+        self.CityComboBox.currentIndexChanged.connect(self.SetRoomInnerTemp)
         self.MakeRoomCellReadOnly()
+        self.MakeRoomTempCellReadOnly()
         # Добавление теплопоступлений с других листов на лист Помещения
         self.HeatInputPushButton.clicked.connect(self.AddPeopleHeatInput)
         self.HeatInputPushButton.clicked.connect(self.AddEquipmentHeatInput)
@@ -93,6 +99,22 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         self.MakeLampsCellReadOnly()
         # Расчёт теплопоступлений от Светильника на листе Светильники
         self.LampsHeatInputPushButton.clicked.connect(self.LampsHeatInput)
+
+    def GetClimateCity(self):
+        path = 'climate_db.xlsx'
+        wb = openpyxl.load_workbook(path)
+        ws = wb.active
+        row = 651
+        self.city_temp_db = {}
+        for city, temp in zip(ws['A'][9:row], ws['L'][9:row]):
+            self.city_temp_db[city.value] = temp.value
+        self.CityComboBox.addItems(self.city_temp_db.keys())
+        self.CityComboBox.currentIndexChanged.connect(self.UpdateTempLabel)
+
+    def UpdateTempLabel(self, index):
+        current_city = self.CityComboBox.currentText()
+        temp = self.city_temp_db.get(current_city, 'Н/Д')
+        self.TempOutsideValueLabel.setText(f'{temp}°C')
 
     def SetWindSpeed(self):
         if self.SeasonComboBox.currentText() == "Теплый":
