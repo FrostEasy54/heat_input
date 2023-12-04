@@ -17,6 +17,7 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         super(MyGUI, self).__init__()
         uic.loadUi(ui_path, self)
 
+        self.setWindowTitle("Расчёт теплопоступлений в помещениях")
         # Расстягивание ширины заголовков таблиц под ширину экрана
         self.RoomsTableWidget.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch)

@@ -82,6 +82,8 @@ class PeopleTable():
         self.PeopleTableWidget.setCellWidget(current_row, col, sb)
 
     def PeopleHeatInput(self):
+        wind_speed = self.WindSpeedDoubleSpinBox.value()
+        t_inside = float(self.RoomsTableWidget.item(0, 3).text())
         for row in range(self.PeopleTableWidget.rowCount()):
             people_count = self.PeopleTableWidget.cellWidget(row, 4).value()
             if self.PeopleTableWidget.cellWidget(row, 1).currentText() == 'Мужской':
@@ -100,10 +102,7 @@ class PeopleTable():
                 clothes_coeff = 0.65
             else:
                 clothes_coeff = 0.40
-            wind_speed = self.WindSpeedDoubleSpinBox.value()
-            t_inside = 18
-            heat_input = people_count * sex_coeff * work_coeff * clothes_coeff * \
-                (2.5 + 10.36 * wind_speed ** 0.5)*(35 - t_inside)
+            heat_input = people_count * sex_coeff * work_coeff * clothes_coeff * (2.5 + 10.36 * wind_speed ** 0.5)*(35 - t_inside)
             heat_input = float('{:.3f}'.format(heat_input))
             item = QTableWidgetItem()
             item.setData(0, f"{heat_input}")
