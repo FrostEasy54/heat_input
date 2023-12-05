@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QTableWidgetItem, QComboBox, QSpinBox, QMessageBox
+from PyQt6.QtWidgets import QTableWidgetItem, QComboBox
+from PyQt6.QtWidgets import QSpinBox, QMessageBox
 from PyQt6 import QtCore
 
 
@@ -14,7 +15,7 @@ class LampsTable:
     def RemoveLampsRow(self):
         if self.LampsTableWidget.rowCount() == 1:
             message_box = QMessageBox()
-            message_box.information(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
+            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
             \nЕсли в вашем помещении нет теплопоступлений от освещения, просто укажите их количество равное 0.")
             message_box.setFixedSize(500, 200)
             return
@@ -90,7 +91,31 @@ class LampsTable:
             item.setData(0, f"{heat_input}")
             self.LampsTableWidget.setItem(row, 4, item)
             self.MakeLampsCellReadOnly()
+        self.ActionSaveLamps.setEnabled(True)
 
     def ClearLampsTable(self):
         self.LampsTableWidget.setRowCount(0)
         self.AddLampsRow()
+        self.ActionSaveLamps.setEnabled(False)
+
+    def ExportLampsTable(self, wb):
+        ws_lamps = wb.create_sheet("Светильники", 0)
+        ws_lamps.merge_cells('A1:E1')
+        cell_title = ws_lamps['A1']
+        cell_title.value = 'Светильники'
+        column_headers = ["№ помещения", "Тип светильника",
+                          "Назначение светильника", "Кол-во", "Q свет, Вт"]
+        for col_num, header in enumerate(column_headers, 1):
+            header_cell = ws_lamps.cell(row=2, column=col_num)
+            header_cell.value = header
+        for row in range(self.LampsTableWidget.rowCount()):
+            for col in range(self.LampsTableWidget.columnCount()):
+                widget = self.LampsTableWidget.cellWidget(row, col)
+                if widget:
+                    value = widget.currentText() if isinstance(
+                        widget, QComboBox) else str(widget.value())
+                else:
+                    item = self.LampsTableWidget.item(row, col)
+                    if item:
+                        value = item.text()
+                ws_lamps.cell(row=row+3, column=col+1, value=value)

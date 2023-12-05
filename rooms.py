@@ -1,7 +1,6 @@
 from PyQt6.QtWidgets import QTableWidgetItem, QComboBox, QDoubleSpinBox
 from PyQt6.QtWidgets import QSpinBox, QMessageBox
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import *
 
 total_room_number = []
 total_people_room_number = []
@@ -22,7 +21,7 @@ class RoomsTable():
     def RemoveRoomsRow(self):
         if self.RoomsTableWidget.rowCount() == 1:
             message_box = QMessageBox()
-            message_box.information(
+            message_box.warning(
                 None, "Единственная строка", "Вы не можете удалить единственную строку в таблице.")
             message_box.setFixedSize(500, 200)
             return
@@ -270,7 +269,6 @@ class RoomsTable():
     def SumOfHeatInput(self):
         if self.RoomNameValidation():
             return
-
         for room_row in range(self.RoomsTableWidget.rowCount()):
             summ_of_heat_input = 0
             for room_col in range(5, self.RoomsTableWidget.columnCount()-1):
@@ -288,6 +286,8 @@ class RoomsTable():
             item.setData(0, f'{summ_of_heat_input}')
             self.RoomsTableWidget.setItem(room_row, 8, item)
         self.MakeRoomCellReadOnly()
+        self.ActionSaveRooms.setEnabled(True)
+        self.ActionSaveAll.setEnabled(True)
 
     def RoomNameValidation(self):
         col = 1
@@ -309,3 +309,31 @@ class RoomsTable():
     def ClearRoomsTable(self):
         self.RoomsTableWidget.setRowCount(0)
         self.AddRoomsRow()
+        self.ActionSaveRooms.setEnabled(False)
+
+    def ExportRoomsTable(self, wb):
+        ws_rooms = wb.create_sheet("Помещения", 0)
+        ws_rooms['A1'] = 'Город'
+        ws_rooms['B1'] = self.CityComboBox.currentText()
+        ws_rooms['D1'] = 't наружного воздуха'
+        ws_rooms['E1'] = self.TempOutsideValueLabel.text()
+        ws_rooms['G1'] = 'Период года'
+        ws_rooms['H1'] = self.SeasonComboBox.currentText()
+        ws_rooms['J1'] = 'V, м/с'
+        ws_rooms['K1'] = self.WindSpeedDoubleSpinBox.value()
+        column_headers = ["№ помещения", "Наименование помещения", "Тип помещения", "tв, °C",
+                          "Площадь помещения", "Q люди, Вт", "Q приборы, Вт", "Q светильники, Вт", "Q общ, Вт"]
+        for col_num, header in enumerate(column_headers, 1):
+            header_cell = ws_rooms.cell(row=2, column=col_num)
+            header_cell.value = header
+        for row in range(self.RoomsTableWidget.rowCount()):
+            for col in range(self.RoomsTableWidget.columnCount()):
+                widget = self.RoomsTableWidget.cellWidget(row, col)
+                if widget:
+                    value = widget.currentText() if isinstance(
+                        widget, QComboBox) else str(widget.value())
+                else:
+                    item = self.RoomsTableWidget.item(row, col)
+                    if item:
+                        value = item.text()
+                ws_rooms.cell(row=row+3, column=col+1, value=value)

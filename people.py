@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QTableWidgetItem, QComboBox, QSpinBox, QMessageBox
+from PyQt6.QtWidgets import QTableWidgetItem, QComboBox, QSpinBox
+from PyQt6.QtWidgets import QMessageBox
 from PyQt6 import QtCore
 
 
@@ -15,7 +16,7 @@ class PeopleTable():
     def RemovePeopleRow(self):
         if self.PeopleTableWidget.rowCount() == 1:
             message_box = QMessageBox()
-            message_box.information(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
+            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
             \nЕсли в вашем помещении нет теплопоступлений от людей, просто укажите их количество равное 0.")
             message_box.setFixedSize(500, 200)
             return
@@ -102,13 +103,39 @@ class PeopleTable():
                 clothes_coeff = 0.65
             else:
                 clothes_coeff = 0.40
-            heat_input = people_count * sex_coeff * work_coeff * clothes_coeff * (2.5 + 10.36 * wind_speed ** 0.5)*(35 - t_inside)
+            heat_input = people_count * sex_coeff * work_coeff * \
+                clothes_coeff * (2.5 + 10.36 * wind_speed **
+                                 0.5)*(35 - t_inside)
             heat_input = float('{:.3f}'.format(heat_input))
             item = QTableWidgetItem()
             item.setData(0, f"{heat_input}")
             self.PeopleTableWidget.setItem(row, 5, item)
             self.MakePeopleCellReadOnly()
+        self.ActionSavePeople.setEnabled(True)
 
     def ClearPeopleTable(self):
         self.PeopleTableWidget.setRowCount(0)
         self.AddPeopleRow()
+        self.ActionSavePeople.setEnabled(False)
+
+    def ExportPeopleTable(self, wb):
+        ws_people = wb.create_sheet("Люди", 0)
+        ws_people.merge_cells('A1:F1')
+        cell_title = ws_people['A1']
+        cell_title.value = 'Люди'
+        column_headers = ["№ помещения", "Пол", "Тип работы",
+                          "Тип одежды", "Кол-во", "Q чел, Вт"]
+        for col_num, header in enumerate(column_headers, 1):
+            header_cell = ws_people.cell(row=2, column=col_num)
+            header_cell.value = header
+        for row in range(self.PeopleTableWidget.rowCount()):
+            for col in range(self.PeopleTableWidget.columnCount()):
+                widget = self.PeopleTableWidget.cellWidget(row, col)
+                if widget:
+                    value = widget.currentText() if isinstance(
+                        widget, QComboBox) else str(widget.value())
+                else:
+                    item = self.PeopleTableWidget.item(row, col)
+                    if item:
+                        value = item.text()
+                ws_people.cell(row=row+3, column=col+1, value=value)

@@ -475,8 +475,22 @@
     <property name="title">
      <string>Файл</string>
     </property>
-    <addaction name="open_file"/>
-    <addaction name="save_file"/>
+    <widget class="QMenu" name="SaveMenu">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Сохранить</string>
+     </property>
+     <addaction name="ActionSaveRooms"/>
+     <addaction name="ActionSavePeople"/>
+     <addaction name="ActionSaveEquipment"/>
+     <addaction name="ActionSaveLamps"/>
+     <addaction name="separator"/>
+     <addaction name="ActionSaveAll"/>
+    </widget>
+    <addaction name="ActionOpenFile"/>
+    <addaction name="SaveMenu"/>
     <addaction name="close_file"/>
    </widget>
    <widget class="QMenu" name="about">
@@ -500,17 +514,9 @@
    <addaction name="about"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="open_file">
+  <action name="ActionOpenFile">
    <property name="text">
     <string>Открыть</string>
-   </property>
-  </action>
-  <action name="save_file">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Сохранить</string>
    </property>
   </action>
   <action name="close_file">
@@ -523,27 +529,67 @@
   </action>
   <action name="actionClearRooms">
    <property name="text">
-    <string>Очистить Помещения</string>
+    <string>Очистить лист Помещения</string>
    </property>
   </action>
   <action name="actionClearPeople">
    <property name="text">
-    <string>Очистить Люди</string>
+    <string>Очистить лист Люди</string>
    </property>
   </action>
   <action name="actionClearEquipment">
    <property name="text">
-    <string>Очистить Оборудование</string>
+    <string>Очистить лист Оборудование</string>
    </property>
   </action>
   <action name="actionClearLamps">
    <property name="text">
-    <string>Очистить Светильники</string>
+    <string>Очистить лист Светильники</string>
    </property>
   </action>
   <action name="actionClearAll">
    <property name="text">
     <string>Очистить Всё</string>
+   </property>
+  </action>
+  <action name="ActionSaveRooms">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сохранить лист Помещения</string>
+   </property>
+  </action>
+  <action name="ActionSavePeople">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сохранить лист Люди</string>
+   </property>
+  </action>
+  <action name="ActionSaveEquipment">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сохранить лист Оборудование</string>
+   </property>
+  </action>
+  <action name="ActionSaveLamps">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сохранить лист Светильники</string>
+   </property>
+  </action>
+  <action name="ActionSaveAll">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сохранить всё в единый файл</string>
    </property>
   </action>
  </widget>

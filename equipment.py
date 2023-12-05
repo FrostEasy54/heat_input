@@ -19,7 +19,7 @@ class EquipmentTable:
     def RemoveEquipmentRow(self):
         if self.EquipmentTableWidget.rowCount() == 1:
             message_box = QMessageBox()
-            message_box.information(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
+            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
             \nЕсли в вашем помещении нет теплопоступлений от оборудования, просто укажите их количество равное 0.")
             message_box.setFixedSize(500, 200)
             return
@@ -27,7 +27,7 @@ class EquipmentTable:
             self.EquipmentTableWidget.removeRow(
                 self.EquipmentTableWidget.rowCount()-1)
 
-        # Неизменяемость клеток, в которых расчитывается Q для таблицы Оборудование
+    # Неизменяемость клеток, в которых расчитывается Q для таблицы Оборудование
     def MakeEquipmentCellReadOnly(self):
         flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         for row in range(self.EquipmentTableWidget.rowCount()):
@@ -97,6 +97,7 @@ class EquipmentTable:
             item.setData(0, f"{heat_input}")
             self.EquipmentTableWidget.setItem(row, 5, item)
             self.MakeEquipmentCellReadOnly()
+        self.ActionSaveEquipment.setEnabled(True)
 
     def SetPowerForEquipmentType(self):
         for row in range(self.EquipmentTableWidget.rowCount()):
@@ -117,3 +118,26 @@ class EquipmentTable:
     def ClearEquipmentTable(self):
         self.EquipmentTableWidget.setRowCount(0)
         self.AddEquipmentRow()
+        self.ActionSaveEquipment.setEnabled(False)
+
+    def ExportEquipmentTable(self, wb):
+        ws_equipment = wb.create_sheet("Оборудование", 0)
+        ws_equipment.merge_cells('A1:F1')
+        cell_title = ws_equipment['A1']
+        cell_title.value = 'Оборудование'
+        column_headers = ["№ помещения", "Тип прибора", "Загрузка прибора",
+                          "Мощность прибора, Вт", "Кол-во", "Q прибор, Вт"]
+        for col_num, header in enumerate(column_headers, 1):
+            header_cell = ws_equipment.cell(row=2, column=col_num)
+            header_cell.value = header
+        for row in range(self.EquipmentTableWidget.rowCount()):
+            for col in range(self.EquipmentTableWidget.columnCount()):
+                widget = self.EquipmentTableWidget.cellWidget(row, col)
+                if widget:
+                    value = widget.currentText() if isinstance(
+                        widget, QComboBox) else str(widget.value())
+                else:
+                    item = self.EquipmentTableWidget.item(row, col)
+                    if item:
+                        value = item.text()
+                ws_equipment.cell(row=row+3, column=col+1, value=value)
