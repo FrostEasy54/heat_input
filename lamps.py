@@ -119,3 +119,37 @@ class LampsTable:
                     if item:
                         value = item.text()
                 ws_lamps.cell(row=row+3, column=col+1, value=value)
+
+    def ImportLampsTable(self, wb):
+        try:
+            ws_lamps = wb.active
+            if not ws_lamps['A1'].value:
+                QMessageBox.warning(None, "Пустой файл",
+                                    "Файл не содержит данных.")
+                return
+            self.ClearLampsTable()
+            for row in range(1, ws_lamps.max_row + 1):
+                if row > 1:
+                    self.AddLampsRow()
+                for col, data_type in zip(range(1, 5), [int, str, str, int]):
+                    cell_value = ws_lamps.cell(row=row, column=col).value
+                    if not isinstance(cell_value, data_type):
+                        QMessageBox.warning(
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
+                        return
+                    widget = self.LampsTableWidget.cellWidget(
+                        row - 1, col - 1)
+                    if widget:
+                        if isinstance(widget, QComboBox):
+                            widget.setCurrentText(cell_value)
+                        elif isinstance(widget, QSpinBox):
+                            widget.setValue(int(cell_value))
+                    else:
+                        item = self.LampsTableWidget.item(row - 1, col - 1)
+                        if item:
+                            item.setText(str(cell_value))
+            QMessageBox.information(
+                None, "Импорт завершен", "Данные успешно импортированы.")
+        except Exception as e:
+            QMessageBox.critical(
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")

@@ -1,7 +1,8 @@
 import os
 import sys
 import openpyxl
-from PyQt6.QtWidgets import QMainWindow, QHeaderView, QApplication, QFileDialog, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QHeaderView, QApplication
+from PyQt6.QtWidgets import QFileDialog, QMessageBox
 from PyQt6 import uic
 from rooms import RoomsTable
 from people import PeopleTable
@@ -51,6 +52,17 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         self.ActionSaveLamps.triggered.connect(lambda: self.ExportSingleTable(
             self.ExportLampsTable))
         self.ActionSaveAll.triggered.connect(self.ExportAllTables)
+
+        # Соединение кнопок импорта
+        self.ActionImportRooms.triggered.connect(
+            lambda: self.ImportSingleTable(self.ImportRoomsTable))
+        self.ActionImportPeople.triggered.connect(
+            lambda: self.ImportSingleTable(self.ImportPeopleTable))
+        self.ActionImportEquipment.triggered.connect(
+            lambda: self.ImportSingleTable(self.ImportEquipmentTable))
+        self.ActionImportLamps.triggered.connect(
+            lambda: self.ImportSingleTable(self.ImportLampsTable))
+        self.ActionImportAll.triggered.connect(self.ImportAllTables)
 
         # Добавление и удаление новых рядов для таблицы Помещения
         self.AddRowRoomsPushButton.clicked.connect(self.AddRoomsRow)
@@ -163,6 +175,38 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
 
     # Экспорт всех таблиц в  один Excel файл
     def ExportAllTables(self):
+        file_dialog = QFileDialog()
+        path, _ = file_dialog.getSaveFileName(
+            self, "Сохранить файл", "", "Excel Files (*.xlsx);;All Files (*)")
+        if not path:
+            return
+        wb = openpyxl.Workbook()
+        self.ExportRoomsTable(wb)
+        self.ExportPeopleTable(wb)
+        self.ExportEquipmentTable(wb)
+        self.ExportLampsTable(wb)
+        if 'Sheet' in wb.sheetnames:
+            wb.remove(wb['Sheet'])
+        wb.save(path)
+        QMessageBox.information(
+            self, "Успешно", "Все таблицы успешно сохранены в файл: {}".format(path))
+
+    def ImportSingleTable(self, import_function):
+        file_dialog = QFileDialog()
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        file_dialog.setNameFilter("Excel Files (*.xlsx);;All Files (*)")
+        path, _ = file_dialog.getOpenFileName(
+            self, "Открыть файл", "", "Excel Files (*.xlsx);;All Files (*)")
+        if not path:
+            return
+        try:
+            wb = openpyxl.load_workbook(path)
+            import_function(wb)
+        except Exception as e:
+            QMessageBox.critical(
+                self, "Ошибка", f"Произошла ошибка при открытии файла: {str(e)}")
+
+    def ImportAllTables(self):
         file_dialog = QFileDialog()
         path, _ = file_dialog.getSaveFileName(
             self, "Сохранить файл", "", "Excel Files (*.xlsx);;All Files (*)")

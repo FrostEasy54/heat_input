@@ -141,3 +141,39 @@ class EquipmentTable:
                     if item:
                         value = item.text()
                 ws_equipment.cell(row=row+3, column=col+1, value=value)
+
+    def ImportEquipmentTable(self, wb):
+        try:
+            ws_equipment = wb.active
+            if not ws_equipment['A1'].value:
+                QMessageBox.warning(None, "Пустой файл",
+                                    "Файл не содержит данных.")
+                return
+            self.ClearEquipmentTable()
+            for row in range(1, ws_equipment.max_row + 1):
+                if row > 1:
+                    self.AddEquipmentRow()
+                for col, data_type in zip(range(1, 6), [int, str, float, int, int]):
+                    cell_value = ws_equipment.cell(row=row, column=col).value
+                    if not isinstance(cell_value, data_type):
+                        QMessageBox.warning(
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
+                        return
+                    widget = self.EquipmentTableWidget.cellWidget(
+                        row - 1, col - 1)
+                    if widget:
+                        if isinstance(widget, QComboBox):
+                            widget.setCurrentText(cell_value)
+                        elif isinstance(widget, QSpinBox):
+                            widget.setValue(int(cell_value))
+                        elif isinstance(widget, QDoubleSpinBox):
+                            widget.setValue(float(cell_value))
+                    else:
+                        item = self.EquipmentTableWidget.item(row - 1, col - 1)
+                        if item:
+                            item.setText(str(cell_value))
+            QMessageBox.information(
+                None, "Импорт завершен", "Данные успешно импортированы.")
+        except Exception as e:
+            QMessageBox.critical(
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")

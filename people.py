@@ -84,7 +84,7 @@ class PeopleTable():
 
     def PeopleHeatInput(self):
         wind_speed = self.WindSpeedDoubleSpinBox.value()
-        t_inside = float(self.RoomsTableWidget.item(0, 3).text())
+        t_inside = float(self.RoomsTableWidget.item(0, 4).text())
         for row in range(self.PeopleTableWidget.rowCount()):
             people_count = self.PeopleTableWidget.cellWidget(row, 4).value()
             if self.PeopleTableWidget.cellWidget(row, 1).currentText() == 'Мужской':
@@ -139,3 +139,37 @@ class PeopleTable():
                     if item:
                         value = item.text()
                 ws_people.cell(row=row+3, column=col+1, value=value)
+
+    def ImportPeopleTable(self, wb):
+        try:
+            ws_people = wb.active
+            if not ws_people['A1'].value:
+                QMessageBox.warning(None, "Пустой файл",
+                                    "Файл не содержит данных.")
+                return
+            self.ClearPeopleTable()
+            for row in range(1, ws_people.max_row + 1):
+                if row > 1:
+                    self.AddPeopleRow()
+                for col, data_type in zip(range(1, 6), [int, str, str, str, int]):
+                    cell_value = ws_people.cell(row=row, column=col).value
+                    if not isinstance(cell_value, data_type):
+                        QMessageBox.warning(
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
+                        return
+                    widget = self.PeopleTableWidget.cellWidget(
+                        row - 1, col - 1)
+                    if widget:
+                        if isinstance(widget, QComboBox):
+                            widget.setCurrentText(cell_value)
+                        elif isinstance(widget, QSpinBox):
+                            widget.setValue(int(cell_value))
+                    else:
+                        item = self.PeopleTableWidget.item(row - 1, col - 1)
+                        if item:
+                            item.setText(str(cell_value))
+            QMessageBox.information(
+                None, "Импорт завершен", "Данные успешно импортированы.")
+        except Exception as e:
+            QMessageBox.critical(
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")

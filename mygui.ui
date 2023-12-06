@@ -183,12 +183,12 @@
                 </column>
                 <column>
                  <property name="text">
-                  <string>tв, °С</string>
+                  <string>Площадь помещения</string>
                  </property>
                 </column>
                 <column>
                  <property name="text">
-                  <string>Площадь помещения</string>
+                  <string>tв, °С</string>
                  </property>
                 </column>
                 <column>
@@ -489,9 +489,19 @@
      <addaction name="separator"/>
      <addaction name="ActionSaveAll"/>
     </widget>
-    <addaction name="ActionOpenFile"/>
+    <widget class="QMenu" name="ImportMenu">
+     <property name="title">
+      <string>Импорт</string>
+     </property>
+     <addaction name="ActionImportRooms"/>
+     <addaction name="ActionImportPeople"/>
+     <addaction name="ActionImportEquipment"/>
+     <addaction name="ActionImportLamps"/>
+     <addaction name="separator"/>
+     <addaction name="ActionImportAll"/>
+    </widget>
+    <addaction name="ImportMenu"/>
     <addaction name="SaveMenu"/>
-    <addaction name="close_file"/>
    </widget>
    <widget class="QMenu" name="about">
     <property name="title">
@@ -514,11 +524,6 @@
    <addaction name="about"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="ActionOpenFile">
-   <property name="text">
-    <string>Открыть</string>
-   </property>
-  </action>
   <action name="close_file">
    <property name="enabled">
     <bool>false</bool>
@@ -589,7 +594,32 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Сохранить всё в единый файл</string>
+    <string>Сохранить все Листы в единый файл</string>
+   </property>
+  </action>
+  <action name="ActionImportRooms">
+   <property name="text">
+    <string>Импортировать лист Помещения</string>
+   </property>
+  </action>
+  <action name="ActionImportPeople">
+   <property name="text">
+    <string>Импортировать лист Люди</string>
+   </property>
+  </action>
+  <action name="ActionImportEquipment">
+   <property name="text">
+    <string>Импортировать лист Оборудование</string>
+   </property>
+  </action>
+  <action name="ActionImportLamps">
+   <property name="text">
+    <string>Импортировать лист Светильники</string>
+   </property>
+  </action>
+  <action name="ActionImportAll">
+   <property name="text">
+    <string>Импортировать все Листы из единого файла</string>
    </property>
   </action>
  </widget>
