@@ -122,7 +122,12 @@ class LampsTable:
 
     def ImportLampsTable(self, wb):
         try:
-            ws_lamps = wb.active
+            sheet_name = 'Светильники'
+            if sheet_name not in wb:
+                QMessageBox.warning(
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                return
+            ws_lamps = wb[sheet_name]
             if not ws_lamps['A1'].value:
                 QMessageBox.warning(None, "Пустой файл",
                                     "Файл не содержит данных.")
@@ -148,6 +153,7 @@ class LampsTable:
                         item = self.LampsTableWidget.item(row - 1, col - 1)
                         if item:
                             item.setText(str(cell_value))
+            self.tabWidget.setCurrentWidget(self.LampsWidget)
             QMessageBox.information(
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:

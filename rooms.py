@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QTableWidgetItem, QComboBox, QDoubleSpinBox
 from PyQt6.QtWidgets import QSpinBox, QMessageBox
+from PyQt6.QtGui import QColor
 from PyQt6 import QtCore
 
 total_room_number = []
@@ -271,20 +272,35 @@ class RoomsTable():
             return
         for room_row in range(self.RoomsTableWidget.rowCount()):
             summ_of_heat_input = 0
-            for room_col in range(5, self.RoomsTableWidget.columnCount()-1):
-                summ_of_heat_input += float(
-                    self.RoomsTableWidget.item(room_row, room_col).text())
-            if summ_of_heat_input == '':
-                message_box = QMessageBox()
-                message_box.critical(
-                    None, "Ошибка", "Теплопоступления для помещения \
-                         не были рассчитаны!")
-                message_box.setFixedSize(500, 200)
-                break
-            summ_of_heat_input = float('{:.3f}'.format(summ_of_heat_input))
+            room_type_item = self.RoomsTableWidget.cellWidget(room_row, 2)
+            room_area_item = self.RoomsTableWidget.cellWidget(room_row, 3)
+            if room_type_item.currentText() == "Производственный":
+                # Выполняем расчеты для производственных помещений
+                for room_col in range(5, self.RoomsTableWidget.columnCount()-1):
+                    summ_of_heat_input += float(
+                        self.RoomsTableWidget.item(room_row, room_col).text())
+                if summ_of_heat_input == '':
+                    message_box = QMessageBox()
+                    message_box.critical(
+                        None, "Ошибка", "Теплопоступления для помещения \
+                            не были рассчитаны!")
+                    message_box.setFixedSize(500, 200)
+                    break
+            elif room_type_item.currentText() == "Бытовой":
+                # Умножаем площадь на коэффициент q = 21
+                q_1 = 21
+                room_area = room_area_item.value()
+                summ_of_heat_input = room_area * q_1
+                for col in range(5, self.RoomsTableWidget.columnCount()-1):
+                    item = self.RoomsTableWidget.item(room_row, col)
+                    if item:
+                        color = QColor(255, 255, 255)
+                        item.setForeground(color)
+            # Устанавливаем результат в соответствующую ячейку
             item = QTableWidgetItem()
-            item.setData(0, f'{summ_of_heat_input}')
+            item.setData(0, f'{summ_of_heat_input:.3f}')
             self.RoomsTableWidget.setItem(room_row, 8, item)
+
         self.MakeRoomCellReadOnly()
         self.ActionSaveRooms.setEnabled(True)
         self.ActionSaveAll.setEnabled(True)
@@ -326,6 +342,9 @@ class RoomsTable():
     def ClearRoomsTable(self):
         self.RoomsTableWidget.setRowCount(0)
         self.AddRoomsRow()
+        self.CityComboBox.setCurrentIndex(0)
+        self.SeasonComboBox.setCurrentIndex(0)
+        self.WindSpeedDoubleSpinBox.setValue(0.1)
         self.ActionSaveRooms.setEnabled(False)
 
     def ExportRoomsTable(self, wb):
@@ -357,40 +376,32 @@ class RoomsTable():
 
     def ImportRoomsTable(self, wb):
         try:
-            ws_rooms = wb.active
+            sheet_name = 'Помещения'
+            if sheet_name not in wb:
+                QMessageBox.warning(
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                return
+            ws_rooms = wb[sheet_name]
             if not ws_rooms['A1'].value or not ws_rooms['A2'].value:
                 QMessageBox.warning(None, "Пустой файл",
                                     "Файл не содержит данных.")
                 return
-
-            # Очищаем текущую таблицу перед импортом
             self.ClearRoomsTable()
-
-            # Импорт данных о городе, периоде года и скорости воздуха
             city = ws_rooms['A1'].value
             season = ws_rooms['B1'].value
             wind_speed = ws_rooms['C1'].value
-
             self.CityComboBox.setCurrentText(city)
             self.SeasonComboBox.setCurrentText(season)
             self.WindSpeedDoubleSpinBox.setValue(float(wind_speed))
-
-            # Начинаем импорт данных о помещениях
             for row in range(2, ws_rooms.max_row + 1):
-                # Добавляем новую строку только если это не первая строка
                 if row > 2:
                     self.AddRoomsRow()
-
                 for col, data_type in zip(range(1, 5), [int, str, str, (int, float)]):
                     cell_value = ws_rooms.cell(row=row, column=col).value
-
-                    # Проверяем тип данных в каждом столбце
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
                             None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
                         return
-
-                    # Второй столбец всегда QTableWidgetItem
                     if col == 2:
                         item = self.RoomsTableWidget.item(row - 2, col - 1)
                         if not item:
@@ -402,19 +413,16 @@ class RoomsTable():
                         widget = self.RoomsTableWidget.cellWidget(
                             row - 2, col - 1)
                         if not widget:
-                            widget = QComboBox()  # Замените на нужный виджет
-                            # Установите нужные параметры виджета
+                            widget = QComboBox()
                             self.RoomsTableWidget.setCellWidget(
                                 row - 2, col - 1, widget)
-
-                        # Теперь можно устанавливать значение
                         if isinstance(widget, QComboBox):
                             widget.setCurrentText(cell_value)
                         elif isinstance(widget, QDoubleSpinBox):
                             widget.setValue(float(cell_value))
                         elif isinstance(widget, QSpinBox):
                             widget.setValue(int(cell_value))
-
+            self.tabWidget.setCurrentWidget(self.RoomsWidget)
             QMessageBox.information(
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:

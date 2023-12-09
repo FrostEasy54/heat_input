@@ -19,6 +19,8 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         uic.loadUi(ui_path, self)
 
         self.setWindowTitle("Расчёт теплопоступлений в помещениях")
+        self.actionAuthors.triggered.connect(self.AuthorsMessage)
+        self.actionTutorial.triggered.connect(self.TutorialMessage)
         # Расстягивание ширины заголовков таблиц под ширину экрана
         self.RoomsTableWidget.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch)
@@ -208,20 +210,32 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
 
     def ImportAllTables(self):
         file_dialog = QFileDialog()
-        path, _ = file_dialog.getSaveFileName(
-            self, "Сохранить файл", "", "Excel Files (*.xlsx);;All Files (*)")
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        file_dialog.setNameFilter("Excel Files (*.xlsx);;All Files (*)")
+        path, _ = file_dialog.getOpenFileName(
+            self, "Открыть файл", "", "Excel Files (*.xlsx);;All Files (*)")
         if not path:
             return
-        wb = openpyxl.Workbook()
-        self.ExportRoomsTable(wb)
-        self.ExportPeopleTable(wb)
-        self.ExportEquipmentTable(wb)
-        self.ExportLampsTable(wb)
-        if 'Sheet' in wb.sheetnames:
-            wb.remove(wb['Sheet'])
-        wb.save(path)
-        QMessageBox.information(
-            self, "Успешно", "Все таблицы успешно сохранены в файл: {}".format(path))
+        try:
+            wb = openpyxl.load_workbook(path)
+            self.ImportLampsTable(wb)
+            self.ImportEquipmentTable(wb)
+            self.ImportPeopleTable(wb)
+            self.ImportRoomsTable(wb)
+        except Exception as e:
+            QMessageBox.critical(
+                self, "Ошибка", f"Произошла ошибка при открытии файла: {str(e)}")
+
+    def AuthorsMessage(self):
+        message_box = QMessageBox()
+        message_box.information(
+            None, "Авторы", "Данное приложение было разработано студентами НИУ МГСУ 4 курса направления ИСТАС, \nгруппы ИЦТМС 4-2, \nДубровиным В.А. и Мышкиным А.В. \n2023 г.")
+        message_box.setFixedSize(500, 200)
+
+    def TutorialMessage(self):
+        message_box = QMessageBox()
+        message_box.information(None, "Руководство пользователя", "1. Заполнение данных начинается с выбора города, периода года и скорости ветра в помещении. \n2. На листе Люди необходимо заполнить данные по столбцам и при необходимости добавить новые строки. Заметьте, что люди указанные в одном и том же номере помещения будут суммироваться в итоговой таблице. Для рассчёта теплопоступлений нажимите кнопку Рассчиать теплопоступления внизу экрана.\n3. Перейдите на лист Оборудование и заполните его по столбцам и затем добавьте новые строки по необходимости. Рассчет производится так же по нажатию кнопки в нижней части экрана.\n4. Заполните лист Светильники по аналогии с предыдущими листами. \n5. Перейдите на лист Помещения, укажите его номер, название, тип и площадь. Нажмите кнопку Рассчитать теплопоступления для рассчёта итоговых теплопоступлений в помещении. \nПриложение так же поддерживает функции экспорта и импорта данных. Для этого необходимо выбрать соответствующий вашим задачам пункт из верхнего меню.\nСтоит отметить, что импорт данных происходит строго по типам данных, представленных в таблицах в приложении. То есть, номер помещения в вашем Excel файле должен быть числом, название помещения — текстом, площадь помещения — целочисленным или с плавающей точкой и так далее.")
+        message_box.setFixedSize(1000, 800)
 
 
 def main():

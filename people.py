@@ -142,7 +142,12 @@ class PeopleTable():
 
     def ImportPeopleTable(self, wb):
         try:
-            ws_people = wb.active
+            sheet_name = 'Люди'
+            if sheet_name not in wb:
+                QMessageBox.warning(
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                return
+            ws_people = wb[sheet_name]
             if not ws_people['A1'].value:
                 QMessageBox.warning(None, "Пустой файл",
                                     "Файл не содержит данных.")
@@ -168,6 +173,7 @@ class PeopleTable():
                         item = self.PeopleTableWidget.item(row - 1, col - 1)
                         if item:
                             item.setText(str(cell_value))
+            self.tabWidget.setCurrentWidget(self.PeopleWidget)
             QMessageBox.information(
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:

@@ -35,7 +35,7 @@
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <widget class="QWidget" name="Rooms">
+          <widget class="QWidget" name="RoomsWidget">
            <attribute name="title">
             <string>Помещения</string>
            </attribute>
@@ -242,7 +242,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="People">
+          <widget class="QWidget" name="PeopleWidget">
            <attribute name="title">
             <string>Люди</string>
            </attribute>
@@ -317,7 +317,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="Equipment">
+          <widget class="QWidget" name="EquipmentWidget">
            <attribute name="title">
             <string>Оборудование</string>
            </attribute>
@@ -388,7 +388,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="Lamps">
+          <widget class="QWidget" name="LampsWidget">
            <attribute name="title">
             <string>Светильники</string>
            </attribute>
@@ -507,6 +507,8 @@
     <property name="title">
      <string>Справка</string>
     </property>
+    <addaction name="actionTutorial"/>
+    <addaction name="actionAuthors"/>
    </widget>
    <widget class="QMenu" name="clear">
     <property name="title">
@@ -519,9 +521,16 @@
     <addaction name="separator"/>
     <addaction name="actionClearAll"/>
    </widget>
+   <widget class="QMenu" name="graphs">
+    <property name="title">
+     <string>Графики</string>
+    </property>
+    <addaction name="actionHeatInputGraph"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="clear"/>
    <addaction name="about"/>
+   <addaction name="graphs"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="close_file">
@@ -620,6 +629,21 @@
   <action name="ActionImportAll">
    <property name="text">
     <string>Импортировать все Листы из единого файла</string>
+   </property>
+  </action>
+  <action name="actionTutorial">
+   <property name="text">
+    <string>Руководство пользователя</string>
+   </property>
+  </action>
+  <action name="actionAuthors">
+   <property name="text">
+    <string>Авторы</string>
+   </property>
+  </action>
+  <action name="actionHeatInputGraph">
+   <property name="text">
+    <string>Графики Теплопоступлений</string>
    </property>
   </action>
  </widget>

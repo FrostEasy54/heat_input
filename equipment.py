@@ -144,7 +144,12 @@ class EquipmentTable:
 
     def ImportEquipmentTable(self, wb):
         try:
-            ws_equipment = wb.active
+            sheet_name = 'Оборудование'
+            if sheet_name not in wb:
+                QMessageBox.warning(
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                return
+            ws_equipment = wb[sheet_name]
             if not ws_equipment['A1'].value:
                 QMessageBox.warning(None, "Пустой файл",
                                     "Файл не содержит данных.")
@@ -172,6 +177,7 @@ class EquipmentTable:
                         item = self.EquipmentTableWidget.item(row - 1, col - 1)
                         if item:
                             item.setText(str(cell_value))
+            self.tabWidget.setCurrentWidget(self.EquipmentWidget)
             QMessageBox.information(
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:
