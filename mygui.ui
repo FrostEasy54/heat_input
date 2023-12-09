@@ -529,8 +529,8 @@
    </widget>
    <addaction name="menu"/>
    <addaction name="clear"/>
-   <addaction name="about"/>
    <addaction name="graphs"/>
+   <addaction name="about"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="close_file">
@@ -642,6 +642,9 @@
    </property>
   </action>
   <action name="actionHeatInputGraph">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Графики Теплопоступлений</string>
    </property>

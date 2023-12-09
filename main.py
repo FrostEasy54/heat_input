@@ -126,6 +126,8 @@ class MyGUI(QMainWindow, RoomsTable, PeopleTable, EquipmentTable, LampsTable):
         # Расчёт теплопоступлений от Светильников на листе Светильники
         self.LampsHeatInputPushButton.clicked.connect(self.LampsHeatInput)
 
+        self.actionHeatInputGraph.triggered.connect(self.showHistogram)
+
     # Получение списка городов из excel файла
     def GetClimateCity(self):
         path = 'climate_db.xlsx'

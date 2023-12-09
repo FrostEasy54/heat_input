@@ -2,6 +2,8 @@ from PyQt6.QtWidgets import QTableWidgetItem, QComboBox, QDoubleSpinBox
 from PyQt6.QtWidgets import QSpinBox, QMessageBox
 from PyQt6.QtGui import QColor
 from PyQt6 import QtCore
+import matplotlib.pyplot as plt
+import numpy as np
 
 total_room_number = []
 total_people_room_number = []
@@ -294,8 +296,7 @@ class RoomsTable():
                 for col in range(5, self.RoomsTableWidget.columnCount()-1):
                     item = self.RoomsTableWidget.item(room_row, col)
                     if item:
-                        color = QColor(255, 255, 255)
-                        item.setForeground(color)
+                        item.setText('')
             # Устанавливаем результат в соответствующую ячейку
             item = QTableWidgetItem()
             item.setData(0, f'{summ_of_heat_input:.3f}')
@@ -304,6 +305,7 @@ class RoomsTable():
         self.MakeRoomCellReadOnly()
         self.ActionSaveRooms.setEnabled(True)
         self.ActionSaveAll.setEnabled(True)
+        self.actionHeatInputGraph.setEnabled(True)
 
     def RoomNameValidation(self):
         col = 1
@@ -428,3 +430,48 @@ class RoomsTable():
         except Exception as e:
             QMessageBox.critical(
                 None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")
+
+    def showHistogram(self):
+        # Создаем новое окно для гистограммы
+        plt.figure(figsize=(8, 6))
+        plt.title("Гистограмма теплопоступлений")
+
+        # Задаем данные для гистограммы
+        sources = ['Q люди, Вт', 'Q освещение, Вт', 'Q приборы, Вт']
+        values = []
+        q_people_values = 0
+        q_lighting_values = 0
+        q_equipment_values = 0
+
+        for room_row in range(self.RoomsTableWidget.rowCount()):
+            q_people_item = self.RoomsTableWidget.item(room_row, 5)
+            q_lighting_item = self.RoomsTableWidget.item(room_row, 6)
+            q_equipment_item = self.RoomsTableWidget.item(room_row, 7)
+            if q_people_item and q_people_item.text() != '':
+                q_people_values += float(q_people_item.text())
+            if q_lighting_item and q_lighting_item.text() != '':
+                q_lighting_values += float(q_lighting_item.text())
+            if q_equipment_item and q_equipment_item.text() != '':
+                q_equipment_values += float(q_equipment_item.text())
+        values.append(q_people_values)
+        values.append(q_lighting_values)
+        values.append(q_equipment_values)
+
+        # Создаем объект Bar для гистограммы
+        bar_width = 0.2
+        indices = np.arange(len(sources))
+
+        bars = plt.bar(indices, values, width=bar_width, color=['r', 'g', 'b'])
+
+        # Добавляем точные значения над каждым столбцом
+        for bar, value in zip(bars, values):
+            plt.text(bar.get_x() + bar.get_width() / 2,
+                     bar.get_height() + 0.1, f'{value:.2f}', ha='center')
+
+        # Добавляем метки и заголовок
+        plt.xlabel('\nИсточники теплопоступления')
+        plt.ylabel('Суммарное теплопоступление')
+        plt.xticks(indices, sources)
+
+        # Отображаем гистограмму
+        plt.show()
