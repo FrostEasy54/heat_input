@@ -92,6 +92,7 @@ class RoomsTable():
             temp_item = QTableWidgetItem()
             temp_item.setData(0, f'{temp_inside}')
             self.RoomsTableWidget.setItem(room_row, col, temp_item)
+        self.MakeRoomTempCellReadOnly()
 
     def AddPeopleHeatInput(self):
         for room_row in range(self.RoomsTableWidget.rowCount()):
