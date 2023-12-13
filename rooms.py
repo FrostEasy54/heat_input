@@ -328,18 +328,19 @@ class RoomsTable():
     def RoomAreaValidation(self):
         col = 3
         for room_row in range(self.RoomsTableWidget.rowCount()):
-            if self.RoomsTableWidget.cellWidget(room_row, col) is None:
-                message_box = QMessageBox()
-                message_box.critical(
-                    None, "Ошибка", f"Пожалуйста, укажите площадь для помещения в строке №{room_row+1} прежде чем рассчитывать его теплопоступления!")
-                message_box.setFixedSize(500, 200)
-                return True
-            elif self.RoomsTableWidget.cellWidget(room_row, col).value() == 0:
-                message_box = QMessageBox()
-                message_box.critical(
-                    None, "Ошибка", f"Площадь помещения не может быть равна 0. Пожалуйста, укажите площадь помещения в строке №{room_row+1}.")
-                message_box.setFixedSize(500, 200)
-                return True
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == "Бытовой":
+                if self.RoomsTableWidget.cellWidget(room_row, col) is None:
+                    message_box = QMessageBox()
+                    message_box.critical(
+                        None, "Ошибка", f"Пожалуйста, укажите площадь для помещения в строке №{room_row+1} прежде чем рассчитывать его теплопоступления!")
+                    message_box.setFixedSize(500, 200)
+                    return True
+                elif self.RoomsTableWidget.cellWidget(room_row, col).value() == 0:
+                    message_box = QMessageBox()
+                    message_box.critical(
+                        None, "Ошибка", f"Площадь помещения не может быть равна 0. Пожалуйста, укажите площадь помещения в строке №{room_row+1}.")
+                    message_box.setFixedSize(500, 200)
+                    return True
         return False
 
     def ClearRoomsTable(self):

@@ -186,7 +186,7 @@
                 </column>
                 <column>
                  <property name="text">
-                  <string>Площадь помещения</string>
+                  <string>Площадь помещения, м</string>
                  </property>
                 </column>
                 <column>
@@ -528,6 +528,7 @@
     </property>
     <addaction name="actionTutorial"/>
     <addaction name="actionAuthors"/>
+    <addaction name="actionNormativeDocs"/>
    </widget>
    <widget class="QMenu" name="clear">
     <property name="title">
@@ -666,6 +667,11 @@
    </property>
    <property name="text">
     <string>Графики Теплопоступлений</string>
+   </property>
+  </action>
+  <action name="actionNormativeDocs">
+   <property name="text">
+    <string>Нормативные документы</string>
    </property>
   </action>
  </widget>
