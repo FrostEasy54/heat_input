@@ -16,8 +16,7 @@ class PeopleTable():
     def RemovePeopleRow(self):
         if self.PeopleTableWidget.rowCount() == 1:
             message_box = QMessageBox()
-            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
-            \nЕсли в вашем помещении нет теплопоступлений от людей, просто укажите их количество равное 0.")
+            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \nЕсли в вашем помещении нет теплопоступлений от людей, просто укажите их количество равное 0.")  # noqa E501
             message_box.setFixedSize(500, 200)
             return
         else:
@@ -84,22 +83,34 @@ class PeopleTable():
 
     def PeopleHeatInput(self):
         wind_speed = self.WindSpeedDoubleSpinBox.value()
-        t_inside = float(self.RoomsTableWidget.item(0, 4).text())
+        room_number_list = []
         for row in range(self.PeopleTableWidget.rowCount()):
+            people_room_number = self.PeopleTableWidget.cellWidget(
+                row, 0).value()
+            for room_row in range(self.RoomsTableWidget.rowCount()):
+                room_number_list.append(self.RoomsTableWidget.cellWidget(
+                    room_row, 0).value())
+            if people_room_number in room_number_list:
+                t_inside = float(self.RoomsTableWidget.cellWidget(
+                    room_number_list.index(people_room_number), 4).value())
+            else:
+                QMessageBox.warning(
+                    None, "Помещение отсутствует", f"Помещение с номером {people_room_number} на листе Помещения отсутcтвует!")  # noqa E501
+                return
             people_count = self.PeopleTableWidget.cellWidget(row, 4).value()
-            if self.PeopleTableWidget.cellWidget(row, 1).currentText() == 'Мужской':
+            if self.PeopleTableWidget.cellWidget(row, 1).currentText() == 'Мужской':  # noqa E501
                 sex_coeff = 1
             else:
                 sex_coeff = 0.85
-            if self.PeopleTableWidget.cellWidget(row, 2).currentText() == 'Легкая':
+            if self.PeopleTableWidget.cellWidget(row, 2).currentText() == 'Легкая':  # noqa E501
                 work_coeff = 1
-            elif self.PeopleTableWidget.cellWidget(row, 2).currentText() == 'Средняя':
+            elif self.PeopleTableWidget.cellWidget(row, 2).currentText() == 'Средняя':  # noqa E501
                 work_coeff = 1.07
             else:
                 work_coeff = 1.15
-            if self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Легкая':
+            if self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Легкая': # noqa E501
                 clothes_coeff = 1
-            elif self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Обычная':
+            elif self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Обычная': # noqa E501
                 clothes_coeff = 0.65
             else:
                 clothes_coeff = 0.40
@@ -145,7 +156,7 @@ class PeopleTable():
             sheet_name = 'Люди'
             if sheet_name not in wb:
                 QMessageBox.warning(
-                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.") # noqa E501
                 return
             ws_people = wb[sheet_name]
             if not ws_people['A1'].value:
@@ -156,11 +167,11 @@ class PeopleTable():
             for row in range(1, ws_people.max_row + 1):
                 if row > 1:
                     self.AddPeopleRow()
-                for col, data_type in zip(range(1, 6), [int, str, str, str, int]):
+                for col, data_type in zip(range(1, 6), [int, str, str, str, int]): # noqa E501
                     cell_value = ws_people.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
-                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.") # noqa E501
                         return
                     widget = self.PeopleTableWidget.cellWidget(
                         row - 1, col - 1)
@@ -178,4 +189,4 @@ class PeopleTable():
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:
             QMessageBox.critical(
-                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}") # noqa E501

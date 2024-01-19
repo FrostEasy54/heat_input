@@ -15,8 +15,7 @@ class LampsTable:
     def RemoveLampsRow(self):
         if self.LampsTableWidget.rowCount() == 1:
             message_box = QMessageBox()
-            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
-            \nЕсли в вашем помещении нет теплопоступлений от освещения, просто укажите их количество равное 0.")
+            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \nЕсли в вашем помещении нет теплопоступлений от освещения, просто укажите их количество равное 0.") # noqa E501
             message_box.setFixedSize(500, 200)
             return
         else:
@@ -85,7 +84,7 @@ class LampsTable:
                 self.LampsTableWidget.cellWidget(row, 1).currentText())
             purpose_value = lamp_purpose_dict.get(
                 self.LampsTableWidget.cellWidget(row, 2).currentText())
-            heat_input = coeff_value * lamps_count_value * type_value * purpose_value
+            heat_input = coeff_value * lamps_count_value * type_value * purpose_value # noqa E501
             heat_input = float('{:.3f}'.format(heat_input))
             item = QTableWidgetItem()
             item.setData(0, f"{heat_input}")
@@ -125,7 +124,7 @@ class LampsTable:
             sheet_name = 'Светильники'
             if sheet_name not in wb:
                 QMessageBox.warning(
-                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.") # noqa E501
                 return
             ws_lamps = wb[sheet_name]
             if not ws_lamps['A1'].value:
@@ -140,7 +139,7 @@ class LampsTable:
                     cell_value = ws_lamps.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
-                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.") # noqa E501
                         return
                     widget = self.LampsTableWidget.cellWidget(
                         row - 1, col - 1)
@@ -158,4 +157,4 @@ class LampsTable:
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:
             QMessageBox.critical(
-                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}") # noqa E501

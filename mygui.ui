@@ -196,22 +196,22 @@
                 </column>
                 <column>
                  <property name="text">
-                  <string>Q люди, Вт</string>
+                  <string>Q люди, Вт/ч</string>
                  </property>
                 </column>
                 <column>
                  <property name="text">
-                  <string>Q приборы, Вт</string>
+                  <string>Q приборы, Вт/ч</string>
                  </property>
                 </column>
                 <column>
                  <property name="text">
-                  <string>Q светильники, Вт</string>
+                  <string>Q светильники, Вт/ч</string>
                  </property>
                 </column>
                 <column>
                  <property name="text">
-                  <string>Q общ, Вт</string>
+                  <string>Q общ, Вт/ч</string>
                  </property>
                 </column>
                 <item row="0" column="0">
@@ -302,7 +302,7 @@
                 </column>
                 <column>
                  <property name="text">
-                  <string>Q чел, Вт</string>
+                  <string>Q чел, Вт/ч</string>
                  </property>
                 </column>
                </widget>
@@ -365,7 +365,7 @@
               </column>
               <column>
                <property name="text">
-                <string>Мощность прибора,Вт</string>
+                <string>Мощность прибора, Вт/ч</string>
                </property>
               </column>
               <column>
@@ -375,7 +375,7 @@
               </column>
               <column>
                <property name="text">
-                <string>Q прибор, Вт</string>
+                <string>Q прибор, Вт/ч</string>
                </property>
               </column>
              </widget>
@@ -409,7 +409,7 @@
           </widget>
           <widget class="QWidget" name="LampsWidget">
            <attribute name="title">
-            <string>Светильники</string>
+            <string>Освещение</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
@@ -441,7 +441,7 @@
               </column>
               <column>
                <property name="text">
-                <string>Q свет, Вт</string>
+                <string>Q свет, Вт/ч</string>
                </property>
               </column>
              </widget>

@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QTableWidgetItem, QComboBox, QDoubleSpinBox
 from PyQt6.QtWidgets import QSpinBox, QMessageBox
-from PyQt6.QtGui import QColor
 from PyQt6 import QtCore
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,15 +16,14 @@ class RoomsTable():
         self.RoomTypeComboBox()
         self.RoomNumberSpinBox()
         self.RoomAreaDoubleSpinBox()
-        self.SetRoomInnerTemp()
         self.MakeRoomCellReadOnly()
-        self.MakeRoomTempCellReadOnly()
+        self.RoomTempDoubleSpinBox()
 
     def RemoveRoomsRow(self):
         if self.RoomsTableWidget.rowCount() == 1:
             message_box = QMessageBox()
             message_box.warning(
-                None, "Единственная строка", "Вы не можете удалить единственную строку в таблице.")
+                None, "Единственная строка", "Вы не можете удалить единственную строку в таблице.") # noqa E501
             message_box.setFixedSize(500, 200)
             return
         else:
@@ -42,16 +40,6 @@ class RoomsTable():
                     self.RoomsTableWidget.setItem(row, col, item)
                 item.setFlags(flags)
 
-    def MakeRoomTempCellReadOnly(self):
-        col = 4
-        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
-        for row in range(self.RoomsTableWidget.rowCount()):
-            item = self.RoomsTableWidget.item(row, col)
-            if item is None:
-                item = QTableWidgetItem()
-                self.RoomsTableWidget.setItem(row, col, item)
-            item.setFlags(flags)
-
     def RoomTypeComboBox(self):
         # Указываем столбец, для которого нужно установить combobox
         col = 2
@@ -60,6 +48,8 @@ class RoomsTable():
         cb = QComboBox()
         cb.addItems(["Производственный", "Бытовой"])
         self.RoomsTableWidget.setCellWidget(row, col, cb)
+        if cb:
+            cb.currentTextChanged.connect(self.UpdateRoomInnerTempMinMax)
 
     def RoomNumberSpinBox(self):
         # Указываем столбец, для которого нужно установить SpinBox
@@ -82,20 +72,37 @@ class RoomsTable():
         sb.setMaximum(1000)
         self.RoomsTableWidget.setCellWidget(current_row, col, sb)
 
-    def SetRoomInnerTemp(self):
+    def RoomTempDoubleSpinBox(self):
         col = 4
-        if float(self.TempOutsideValueLabel.text()[:-2]) > -15:
-            temp_inside = 18
-        else:
-            temp_inside = 20
+        current_row = self.RoomsTableWidget.rowCount() - 1
+        # Получаем значение номера помещения из предыдущей строки
+        sb = QDoubleSpinBox()
+        sb.setMinimum(-50)
+        sb.setMaximum(50)
+        self.RoomsTableWidget.setCellWidget(current_row, col, sb)
+
+    def UpdateRoomInnerTempMinMax(self):
+        col = 4
         for room_row in range(self.RoomsTableWidget.rowCount()):
-            temp_item = QTableWidgetItem()
-            temp_item.setData(0, f'{temp_inside}')
-            self.RoomsTableWidget.setItem(room_row, col, temp_item)
-        self.MakeRoomTempCellReadOnly()
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой': # noqa E501
+                if self.SeasonComboBox.currentText() == 'Холодный':
+                    self.RoomsTableWidget.cellWidget(
+                        room_row, col).setMinimum(18)
+                    self.RoomsTableWidget.cellWidget(
+                        room_row, col).setMaximum(26)
+                elif self.SeasonComboBox.currentText() == 'Теплый':
+                    self.RoomsTableWidget.cellWidget(
+                        room_row, col).setMinimum(20)
+                    self.RoomsTableWidget.cellWidget(
+                        room_row, col).setMaximum(28)
+            else:
+                self.RoomsTableWidget.cellWidget(room_row, col).setMinimum(-50)
+                self.RoomsTableWidget.cellWidget(room_row, col).setMaximum(50)
 
     def AddPeopleHeatInput(self):
         for room_row in range(self.RoomsTableWidget.rowCount()):
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой': # noqa E501
+                continue
             summ_of_heat_input = 0
             for people_row in range(self.PeopleTableWidget.rowCount()):
                 room_number_item = self.RoomsTableWidget.cellWidget(
@@ -126,7 +133,7 @@ class RoomsTable():
                         int_people_room_number_item)
                 if self.PeopleTableWidget.item(people_row, 5) is None:
                     item = QTableWidgetItem()
-                    item.setData(0, '0.0')
+                    item.setData(0, '0.000')
                     self.RoomsTableWidget.setItem(room_row, 5, item)
                 elif int_room_number_item == int_people_room_number_item:
                     heat_input_value = self.PeopleTableWidget.item(
@@ -134,11 +141,12 @@ class RoomsTable():
 
                     if heat_input_value == '':
                         item = QTableWidgetItem()
-                        item.setData(0, '0.0')
+                        item.setData(0, '0.000')
                         self.RoomsTableWidget.setItem(room_row, 5, item)
+                        self.tabWidget.setCurrentWidget(self.PeopleWidget)
                         message_box = QMessageBox()
                         message_box.critical(
-                            None, "Ошибка", f"Теплопоступления на листе Люди для помещения №{int_room_number_item} не были рассчитаны!")
+                            None, "Ошибка", f"Теплопоступления на листе Люди для помещения №{int_room_number_item} не были рассчитаны!") # noqa E501
                         message_box.setFixedSize(500, 200)
                         break
 
@@ -148,18 +156,23 @@ class RoomsTable():
                     item.setData(0, f'{summ_of_heat_input}')
                     self.RoomsTableWidget.setItem(room_row, 5, item)
                 elif int_room_number_item not in set(total_people_room_number):
+                    self.tabWidget.setCurrentWidget(self.PeopleWidget)
+                    QMessageBox().critical(None, "Ошибка",
+                                           f"Помещение №{int_room_number_item} отсутствует в списке помещений на листе Люди!")  # noqa E501
                     item = QTableWidgetItem()
-                    item.setData(0, '0.0')
+                    item.setData(0, '0.000')
                     self.RoomsTableWidget.setItem(room_row, 5, item)
         self.MakeRoomCellReadOnly()
 
     def AddEquipmentHeatInput(self):
         for room_row in range(self.RoomsTableWidget.rowCount()):
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой':  # noqa E501
+                continue
             summ_of_heat_input = 0
             for equipment_row in range(self.EquipmentTableWidget.rowCount()):
                 room_number_item = self.RoomsTableWidget.cellWidget(
                     room_row, 0)
-                equipment_room_number_item = self.EquipmentTableWidget.cellWidget(
+                equipment_room_number_item = self.EquipmentTableWidget.cellWidget(  # noqa E501
                     equipment_row, 0)
                 if equipment_room_number_item is None:
                     message_box = QMessageBox()
@@ -180,12 +193,12 @@ class RoomsTable():
                     total_room_number.append(int_room_number_item)
                 int_equipment_room_number_item = int(
                     equipment_room_number_item.value())
-                if int_equipment_room_number_item not in total_equipment_room_number:
+                if int_equipment_room_number_item not in total_equipment_room_number:  # noqa E501
                     total_equipment_room_number.append(
                         int_equipment_room_number_item)
                 if self.EquipmentTableWidget.item(equipment_row, 5) is None:
                     item = QTableWidgetItem()
-                    item.setData(0, '0.0')
+                    item.setData(0, '0.000')
                     self.RoomsTableWidget.setItem(room_row, 6, item)
                 elif int_room_number_item == int_equipment_room_number_item:
                     heat_input_value = self.EquipmentTableWidget.item(
@@ -193,11 +206,12 @@ class RoomsTable():
 
                     if heat_input_value == '':
                         item = QTableWidgetItem()
-                        item.setData(0, '0.0')
+                        item.setData(0, '0.000')
                         self.RoomsTableWidget.setItem(room_row, 6, item)
+                        self.tabWidget.setCurrentWidget(self.EquipmentWidget)
                         message_box = QMessageBox()
                         message_box.critical(
-                            None, "Ошибка", f"Теплопоступления на листе Оборудование для помещения №{int_room_number_item} не были рассчитаны!")
+                            None, "Ошибка", f"Теплопоступления на листе Оборудование для помещения №{int_room_number_item} не были рассчитаны!")  # noqa E501
                         message_box.setFixedSize(500, 200)
                         break
 
@@ -206,14 +220,19 @@ class RoomsTable():
                     item = QTableWidgetItem()
                     item.setData(0, f'{summ_of_heat_input}')
                     self.RoomsTableWidget.setItem(room_row, 6, item)
-                elif int_room_number_item not in set(total_equipment_room_number):
+                elif int_room_number_item not in set(total_equipment_room_number):  # noqa E501
+                    self.tabWidget.setCurrentWidget(self.EquipmentWidget)
+                    QMessageBox().critical(None, "Ошибка",
+                                           f"Помещение №{int_room_number_item} отсутствует в списке помещений на листе Оборудование!")  # noqa E501
                     item = QTableWidgetItem()
-                    item.setData(0, '0.0')
+                    item.setData(0, '0.000')
                     self.RoomsTableWidget.setItem(room_row, 6, item)
         self.MakeRoomCellReadOnly()
 
     def AddLampsHeatInput(self):
         for room_row in range(self.RoomsTableWidget.rowCount()):
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой':  # noqa E501
+                continue
             summ_of_heat_input = 0
             for lamps_row in range(self.LampsTableWidget.rowCount()):
                 room_number_item = self.RoomsTableWidget.cellWidget(
@@ -243,7 +262,7 @@ class RoomsTable():
                     total_lamps_room_number.append(int_lamps_room_number_item)
                 if self.LampsTableWidget.item(lamps_row, 4) is None:
                     item = QTableWidgetItem()
-                    item.setData(0, '0.0')
+                    item.setData(0, '0.000')
                     self.RoomsTableWidget.setItem(room_row, 7, item)
                 elif int_room_number_item == int_lamps_room_number_item:
                     heat_input_value = self.LampsTableWidget.item(
@@ -251,11 +270,12 @@ class RoomsTable():
 
                     if heat_input_value == '':
                         item = QTableWidgetItem()
-                        item.setData(0, '0.0')
+                        item.setData(0, '0.000')
                         self.RoomsTableWidget.setItem(room_row, 7, item)
+                        self.tabWidget.setCurrentWidget(self.LampsWidget)
                         message_box = QMessageBox()
                         message_box.critical(
-                            None, "Ошибка", f"Теплопоступления на листе Освещение для помещения №{int_room_number_item} не были рассчитаны!")
+                            None, "Ошибка", f"Теплопоступления на листе Освещение для помещения №{int_room_number_item} не были рассчитаны!")  # noqa E501
                         message_box.setFixedSize(500, 200)
                         break
 
@@ -265,8 +285,11 @@ class RoomsTable():
                     item.setData(0, f'{summ_of_heat_input}')
                     self.RoomsTableWidget.setItem(room_row, 7, item)
                 elif int_room_number_item not in set(total_lamps_room_number):
+                    self.tabWidget.setCurrentWidget(self.LampsWidget)
+                    QMessageBox().critical(None, "Ошибка",
+                                           f"Помещение №{int_room_number_item} отсутствует в списке помещений на листе Освещение!")  # noqa E501
                     item = QTableWidgetItem()
-                    item.setData(0, '0.0')
+                    item.setData(0, '0.000')
                     self.RoomsTableWidget.setItem(room_row, 7, item)
         self.MakeRoomCellReadOnly()
 
@@ -279,7 +302,7 @@ class RoomsTable():
             room_area_item = self.RoomsTableWidget.cellWidget(room_row, 3)
             if room_type_item.currentText() == "Производственный":
                 # Выполняем расчеты для производственных помещений
-                for room_col in range(5, self.RoomsTableWidget.columnCount()-1):
+                for room_col in range(5, self.RoomsTableWidget.columnCount()-1): # noqa E501
                     summ_of_heat_input += float(
                         self.RoomsTableWidget.item(room_row, room_col).text())
                 if summ_of_heat_input == '':
@@ -309,36 +332,38 @@ class RoomsTable():
         self.actionHeatInputGraph.setEnabled(True)
 
     def RoomNameValidation(self):
+        self.tabWidget.setCurrentWidget(self.RoomsWidget)
         col = 1
         for room_row in range(self.RoomsTableWidget.rowCount()):
             if self.RoomsTableWidget.item(room_row, col) is None:
                 message_box = QMessageBox()
                 message_box.critical(
-                    None, "Ошибка", f"Пожалуйста, укажите название для помещения в строке №{room_row+1} прежде чем рассчитывать его теплопоступления!")
+                    None, "Ошибка", f"Пожалуйста, укажите название для помещения в строке №{room_row+1}, прежде чем рассчитывать его теплопоступления!")  # noqa E501
                 message_box.setFixedSize(500, 200)
                 return True
             elif self.RoomsTableWidget.item(room_row, col).text() == '':
                 message_box = QMessageBox()
                 message_box.critical(
-                    None, "Ошибка", f"Пожалуйста, укажите название для помещения в строке №{room_row+1} прежде чем рассчитывать его теплопоступления!")
+                    None, "Ошибка", f"Пожалуйста, укажите название для помещения в строке №{room_row+1}, прежде чем рассчитывать его теплопоступления!")  # noqa E501
                 message_box.setFixedSize(500, 200)
                 return True
         return False
 
     def RoomAreaValidation(self):
+        self.tabWidget.setCurrentWidget(self.RoomsWidget)
         col = 3
         for room_row in range(self.RoomsTableWidget.rowCount()):
-            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == "Бытовой":
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == "Бытовой":  # noqa E501
                 if self.RoomsTableWidget.cellWidget(room_row, col) is None:
                     message_box = QMessageBox()
                     message_box.critical(
-                        None, "Ошибка", f"Пожалуйста, укажите площадь для помещения в строке №{room_row+1} прежде чем рассчитывать его теплопоступления!")
+                        None, "Ошибка", f"Пожалуйста, укажите площадь для помещения в строке №{room_row+1}, прежде чем рассчитывать его теплопоступления!")  # noqa E501
                     message_box.setFixedSize(500, 200)
                     return True
-                elif self.RoomsTableWidget.cellWidget(room_row, col).value() == 0:
+                elif self.RoomsTableWidget.cellWidget(room_row, col).value() == 0: # noqa E501
                     message_box = QMessageBox()
                     message_box.critical(
-                        None, "Ошибка", f"Площадь помещения не может быть равна 0. Пожалуйста, укажите площадь помещения в строке №{room_row+1}.")
+                        None, "Ошибка", f"Площадь помещения не может быть равна 0. Пожалуйста, укажите площадь помещения в строке №{room_row+1}.")  # noqa E501
                     message_box.setFixedSize(500, 200)
                     return True
         return False
@@ -361,8 +386,8 @@ class RoomsTable():
         ws_rooms['H1'] = self.SeasonComboBox.currentText()
         ws_rooms['J1'] = 'V, м/с'
         ws_rooms['K1'] = self.WindSpeedDoubleSpinBox.value()
-        column_headers = ["№ помещения", "Наименование помещения", "Тип помещения", "tв, °C",
-                          "Площадь помещения", "Q люди, Вт", "Q приборы, Вт", "Q светильники, Вт", "Q общ, Вт"]
+        column_headers = ["№ помещения", "Наименование помещения", "Тип помещения", "tв, °C", # noqa E501
+                          "Площадь помещения", "Q люди, Вт", "Q приборы, Вт", "Q светильники, Вт", "Q общ, Вт"] # noqa E501
         for col_num, header in enumerate(column_headers, 1):
             header_cell = ws_rooms.cell(row=2, column=col_num)
             header_cell.value = header
@@ -383,7 +408,7 @@ class RoomsTable():
             sheet_name = 'Помещения'
             if sheet_name not in wb:
                 QMessageBox.warning(
-                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.") # noqa E501
                 return
             ws_rooms = wb[sheet_name]
             if not ws_rooms['A1'].value or not ws_rooms['A2'].value:
@@ -400,11 +425,11 @@ class RoomsTable():
             for row in range(2, ws_rooms.max_row + 1):
                 if row > 2:
                     self.AddRoomsRow()
-                for col, data_type in zip(range(1, 5), [int, str, str, (int, float)]):
+                for col, data_type in zip(range(1, 5), [int, str, str, (int, float)]): # noqa E501
                     cell_value = ws_rooms.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
-                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.") # noqa E501
                         return
                     if col == 2:
                         item = self.RoomsTableWidget.item(row - 2, col - 1)
@@ -431,7 +456,7 @@ class RoomsTable():
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:
             QMessageBox.critical(
-                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}") # noqa E501
 
     def showHistogram(self):
         # Создаем новое окно для гистограммы

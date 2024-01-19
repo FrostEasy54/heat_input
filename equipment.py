@@ -19,8 +19,7 @@ class EquipmentTable:
     def RemoveEquipmentRow(self):
         if self.EquipmentTableWidget.rowCount() == 1:
             message_box = QMessageBox()
-            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \
-            \nЕсли в вашем помещении нет теплопоступлений от оборудования, просто укажите их количество равное 0.")
+            message_box.warning(None, "Единственная строка", "Вы не можете удалить единственную строку в таблице. \nЕсли в вашем помещении нет теплопоступлений от оборудования, просто укажите их количество равное 0.") # noqa E501
             message_box.setFixedSize(500, 200)
             return
         else:
@@ -147,7 +146,7 @@ class EquipmentTable:
             sheet_name = 'Оборудование'
             if sheet_name not in wb:
                 QMessageBox.warning(
-                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.") # noqa E501
                 return
             ws_equipment = wb[sheet_name]
             if not ws_equipment['A1'].value:
@@ -158,11 +157,11 @@ class EquipmentTable:
             for row in range(1, ws_equipment.max_row + 1):
                 if row > 1:
                     self.AddEquipmentRow()
-                for col, data_type in zip(range(1, 6), [int, str, float, int, int]):
+                for col, data_type in zip(range(1, 6), [int, str, float, int, int]): # noqa E501
                     cell_value = ws_equipment.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
-                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.") # noqa E501
                         return
                     widget = self.EquipmentTableWidget.cellWidget(
                         row - 1, col - 1)
@@ -182,4 +181,4 @@ class EquipmentTable:
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:
             QMessageBox.critical(
-                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}") # noqa E501
