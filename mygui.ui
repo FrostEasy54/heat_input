@@ -206,7 +206,7 @@
                 </column>
                 <column>
                  <property name="text">
-                  <string>Q светильники, Вт/ч</string>
+                  <string>Q освещение, Вт/ч</string>
                  </property>
                 </column>
                 <column>
@@ -615,7 +615,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Сохранить лист Светильники</string>
+    <string>Сохранить лист Освещение</string>
    </property>
   </action>
   <action name="ActionSaveAll">
@@ -643,7 +643,7 @@
   </action>
   <action name="ActionImportLamps">
    <property name="text">
-    <string>Импортировать лист Светильники</string>
+    <string>Импортировать лист Освещение</string>
    </property>
   </action>
   <action name="ActionImportAll">

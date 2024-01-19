@@ -23,7 +23,7 @@ class RoomsTable():
         if self.RoomsTableWidget.rowCount() == 1:
             message_box = QMessageBox()
             message_box.warning(
-                None, "Единственная строка", "Вы не можете удалить единственную строку в таблице.") # noqa E501
+                None, "Единственная строка", "Вы не можете удалить единственную строку в таблице.")  # noqa E501
             message_box.setFixedSize(500, 200)
             return
         else:
@@ -84,7 +84,7 @@ class RoomsTable():
     def UpdateRoomInnerTempMinMax(self):
         col = 4
         for room_row in range(self.RoomsTableWidget.rowCount()):
-            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой': # noqa E501
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой':  # noqa E501
                 if self.SeasonComboBox.currentText() == 'Холодный':
                     self.RoomsTableWidget.cellWidget(
                         room_row, col).setMinimum(18)
@@ -101,7 +101,7 @@ class RoomsTable():
 
     def AddPeopleHeatInput(self):
         for room_row in range(self.RoomsTableWidget.rowCount()):
-            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой': # noqa E501
+            if self.RoomsTableWidget.cellWidget(room_row, 2).currentText() == 'Бытовой':  # noqa E501
                 continue
             summ_of_heat_input = 0
             for people_row in range(self.PeopleTableWidget.rowCount()):
@@ -146,7 +146,7 @@ class RoomsTable():
                         self.tabWidget.setCurrentWidget(self.PeopleWidget)
                         message_box = QMessageBox()
                         message_box.critical(
-                            None, "Ошибка", f"Теплопоступления на листе Люди для помещения №{int_room_number_item} не были рассчитаны!") # noqa E501
+                            None, "Ошибка", f"Теплопоступления на листе Люди для помещения №{int_room_number_item} не были рассчитаны!")  # noqa E501
                         message_box.setFixedSize(500, 200)
                         break
 
@@ -302,7 +302,7 @@ class RoomsTable():
             room_area_item = self.RoomsTableWidget.cellWidget(room_row, 3)
             if room_type_item.currentText() == "Производственный":
                 # Выполняем расчеты для производственных помещений
-                for room_col in range(5, self.RoomsTableWidget.columnCount()-1): # noqa E501
+                for room_col in range(5, self.RoomsTableWidget.columnCount()-1):  # noqa E501
                     summ_of_heat_input += float(
                         self.RoomsTableWidget.item(room_row, room_col).text())
                 if summ_of_heat_input == '':
@@ -360,7 +360,7 @@ class RoomsTable():
                         None, "Ошибка", f"Пожалуйста, укажите площадь для помещения в строке №{room_row+1}, прежде чем рассчитывать его теплопоступления!")  # noqa E501
                     message_box.setFixedSize(500, 200)
                     return True
-                elif self.RoomsTableWidget.cellWidget(room_row, col).value() == 0: # noqa E501
+                elif self.RoomsTableWidget.cellWidget(room_row, col).value() == 0:  # noqa E501
                     message_box = QMessageBox()
                     message_box.critical(
                         None, "Ошибка", f"Площадь помещения не может быть равна 0. Пожалуйста, укажите площадь помещения в строке №{room_row+1}.")  # noqa E501
@@ -378,30 +378,29 @@ class RoomsTable():
 
     def ExportRoomsTable(self, wb):
         ws_rooms = wb.create_sheet("Помещения", 0)
-        ws_rooms['A1'] = 'Город'
-        ws_rooms['B1'] = self.CityComboBox.currentText()
-        ws_rooms['D1'] = 't наружного воздуха'
-        ws_rooms['E1'] = self.TempOutsideValueLabel.text()
-        ws_rooms['G1'] = 'Период года'
-        ws_rooms['H1'] = self.SeasonComboBox.currentText()
-        ws_rooms['J1'] = 'V, м/с'
-        ws_rooms['K1'] = self.WindSpeedDoubleSpinBox.value()
-        column_headers = ["№ помещения", "Наименование помещения", "Тип помещения", "tв, °C", # noqa E501
-                          "Площадь помещения", "Q люди, Вт", "Q приборы, Вт", "Q светильники, Вт", "Q общ, Вт"] # noqa E501
-        for col_num, header in enumerate(column_headers, 1):
-            header_cell = ws_rooms.cell(row=2, column=col_num)
-            header_cell.value = header
+        ws_rooms['A1'] = str(self.CityComboBox.currentText())
+        ws_rooms['B1'] = str(self.SeasonComboBox.currentText())
+        ws_rooms['C1'] = float(self.WindSpeedDoubleSpinBox.value())
         for row in range(self.RoomsTableWidget.rowCount()):
             for col in range(self.RoomsTableWidget.columnCount()):
                 widget = self.RoomsTableWidget.cellWidget(row, col)
                 if widget:
-                    value = widget.currentText() if isinstance(
-                        widget, QComboBox) else str(widget.value())
+                    if col == 0:
+                        value = int(widget.value())
+                    elif col == 2:
+                        value = str(widget.currentText())
+                    elif col in [3, 4]:
+                        value = float(widget.value())
+                    else:
+                        value = str(widget.value())
                 else:
                     item = self.RoomsTableWidget.item(row, col)
                     if item:
-                        value = item.text()
-                ws_rooms.cell(row=row+3, column=col+1, value=value)
+                        if col in [5, 6, 7, 8]:
+                            value = float(item.text())
+                        else:
+                            value = str(item.text())
+                ws_rooms.cell(row=row+2, column=col+1, value=value)
 
     def ImportRoomsTable(self, wb):
         try:
@@ -419,19 +418,19 @@ class RoomsTable():
             city = ws_rooms['A1'].value
             season = ws_rooms['B1'].value
             wind_speed = ws_rooms['C1'].value
-            self.CityComboBox.setCurrentText(city)
-            self.SeasonComboBox.setCurrentText(season)
+            self.CityComboBox.setCurrentText(str(city))
+            self.SeasonComboBox.setCurrentText(str(season))
             self.WindSpeedDoubleSpinBox.setValue(float(wind_speed))
             for row in range(2, ws_rooms.max_row + 1):
                 if row > 2:
                     self.AddRoomsRow()
-                for col, data_type in zip(range(1, 5), [int, str, str, (int, float)]): # noqa E501
+                for col, data_type in zip(range(1, 10), [int, str, str, (int, float), (int, float), (int, float), (int, float), (int, float), (int, float)]): # noqa E501
                     cell_value = ws_rooms.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
                             None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.") # noqa E501
                         return
-                    if col == 2:
+                    if col in [2, 6, 7, 8, 9]:
                         item = self.RoomsTableWidget.item(row - 2, col - 1)
                         if not item:
                             item = QTableWidgetItem()
@@ -446,7 +445,7 @@ class RoomsTable():
                             self.RoomsTableWidget.setCellWidget(
                                 row - 2, col - 1, widget)
                         if isinstance(widget, QComboBox):
-                            widget.setCurrentText(cell_value)
+                            widget.setCurrentText(str(cell_value))
                         elif isinstance(widget, QDoubleSpinBox):
                             widget.setValue(float(cell_value))
                         elif isinstance(widget, QSpinBox):
@@ -472,8 +471,8 @@ class RoomsTable():
 
         for room_row in range(self.RoomsTableWidget.rowCount()):
             q_people_item = self.RoomsTableWidget.item(room_row, 5)
-            q_lighting_item = self.RoomsTableWidget.item(room_row, 6)
-            q_equipment_item = self.RoomsTableWidget.item(room_row, 7)
+            q_equipment_item = self.RoomsTableWidget.item(room_row, 6)
+            q_lighting_item = self.RoomsTableWidget.item(room_row, 7)
             if q_people_item and q_people_item.text() != '':
                 q_people_values += float(q_people_item.text())
             if q_lighting_item and q_lighting_item.text() != '':

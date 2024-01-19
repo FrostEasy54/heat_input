@@ -98,30 +98,24 @@ class LampsTable:
         self.ActionSaveLamps.setEnabled(False)
 
     def ExportLampsTable(self, wb):
-        ws_lamps = wb.create_sheet("Светильники", 0)
-        ws_lamps.merge_cells('A1:E1')
-        cell_title = ws_lamps['A1']
-        cell_title.value = 'Светильники'
-        column_headers = ["№ помещения", "Тип светильника",
-                          "Назначение светильника", "Кол-во", "Q свет, Вт"]
-        for col_num, header in enumerate(column_headers, 1):
-            header_cell = ws_lamps.cell(row=2, column=col_num)
-            header_cell.value = header
+        ws_lamps = wb.create_sheet("Освещение", 0)
         for row in range(self.LampsTableWidget.rowCount()):
             for col in range(self.LampsTableWidget.columnCount()):
                 widget = self.LampsTableWidget.cellWidget(row, col)
                 if widget:
-                    value = widget.currentText() if isinstance(
-                        widget, QComboBox) else str(widget.value())
+                    if col in [0, 3]:
+                        value = int(widget.value())
+                    elif col in [1, 2]:
+                        value = str(widget.currentText())
                 else:
                     item = self.LampsTableWidget.item(row, col)
                     if item:
-                        value = item.text()
-                ws_lamps.cell(row=row+3, column=col+1, value=value)
+                        value = float(item.text())
+                ws_lamps.cell(row=row+1, column=col+1, value=value)
 
     def ImportLampsTable(self, wb):
         try:
-            sheet_name = 'Светильники'
+            sheet_name = 'Освещение'
             if sheet_name not in wb:
                 QMessageBox.warning(
                     None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.") # noqa E501
@@ -135,7 +129,7 @@ class LampsTable:
             for row in range(1, ws_lamps.max_row + 1):
                 if row > 1:
                     self.AddLampsRow()
-                for col, data_type in zip(range(1, 5), [int, str, str, int]):
+                for col, data_type in zip(range(1, 6), [int, str, str, int, (int, float)]): # noqa E501
                     cell_value = ws_lamps.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(

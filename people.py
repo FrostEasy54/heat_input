@@ -94,8 +94,9 @@ class PeopleTable():
                 t_inside = float(self.RoomsTableWidget.cellWidget(
                     room_number_list.index(people_room_number), 4).value())
             else:
+                self.tabWidget.setCurrentWidget(self.RoomsWidget)
                 QMessageBox.warning(
-                    None, "Помещение отсутствует", f"Помещение с номером {people_room_number} на листе Помещения отсутcтвует!")  # noqa E501
+                    None, "Помещение отсутствует", f"Невозможно узнать значение температуры в помещении, так как \nПомещение с номером {people_room_number} на листе Помещения отсутcтвует!")  # noqa E501
                 return
             people_count = self.PeopleTableWidget.cellWidget(row, 4).value()
             if self.PeopleTableWidget.cellWidget(row, 1).currentText() == 'Мужской':  # noqa E501
@@ -108,9 +109,9 @@ class PeopleTable():
                 work_coeff = 1.07
             else:
                 work_coeff = 1.15
-            if self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Легкая': # noqa E501
+            if self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Легкая':  # noqa E501
                 clothes_coeff = 1
-            elif self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Обычная': # noqa E501
+            elif self.PeopleTableWidget.cellWidget(row, 3).currentText() == 'Обычная':  # noqa E501
                 clothes_coeff = 0.65
             else:
                 clothes_coeff = 0.40
@@ -131,32 +132,26 @@ class PeopleTable():
 
     def ExportPeopleTable(self, wb):
         ws_people = wb.create_sheet("Люди", 0)
-        ws_people.merge_cells('A1:F1')
-        cell_title = ws_people['A1']
-        cell_title.value = 'Люди'
-        column_headers = ["№ помещения", "Пол", "Тип работы",
-                          "Тип одежды", "Кол-во", "Q чел, Вт"]
-        for col_num, header in enumerate(column_headers, 1):
-            header_cell = ws_people.cell(row=2, column=col_num)
-            header_cell.value = header
         for row in range(self.PeopleTableWidget.rowCount()):
             for col in range(self.PeopleTableWidget.columnCount()):
                 widget = self.PeopleTableWidget.cellWidget(row, col)
                 if widget:
-                    value = widget.currentText() if isinstance(
-                        widget, QComboBox) else str(widget.value())
+                    if col in [0, 4]:
+                        value = int(widget.value())
+                    elif col in [1, 2, 3]:
+                        value = str(widget.currentText())
                 else:
                     item = self.PeopleTableWidget.item(row, col)
                     if item:
-                        value = item.text()
-                ws_people.cell(row=row+3, column=col+1, value=value)
+                        value = float(item.text())
+                ws_people.cell(row=row+1, column=col+1, value=value)
 
     def ImportPeopleTable(self, wb):
         try:
             sheet_name = 'Люди'
             if sheet_name not in wb:
                 QMessageBox.warning(
-                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.") # noqa E501
+                    None, "Лист не найден", f"Лист '{sheet_name}' не найден в файле Excel.")  # noqa E501
                 return
             ws_people = wb[sheet_name]
             if not ws_people['A1'].value:
@@ -167,11 +162,11 @@ class PeopleTable():
             for row in range(1, ws_people.max_row + 1):
                 if row > 1:
                     self.AddPeopleRow()
-                for col, data_type in zip(range(1, 6), [int, str, str, str, int]): # noqa E501
+                for col, data_type in zip(range(1, 7), [int, str, str, str, int, (int, float)]):  # noqa E501
                     cell_value = ws_people.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
-                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.") # noqa E501
+                            None, "Ошибка типа данных", f"Строка {row}, столбец {col}: Неправильный тип данных.")  # noqa E501
                         return
                     widget = self.PeopleTableWidget.cellWidget(
                         row - 1, col - 1)
@@ -189,4 +184,4 @@ class PeopleTable():
                 None, "Импорт завершен", "Данные успешно импортированы.")
         except Exception as e:
             QMessageBox.critical(
-                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}") # noqa E501
+                None, "Ошибка импорта", f"Произошла ошибка при импорте данных: {str(e)}")  # noqa E501

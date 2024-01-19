@@ -121,25 +121,21 @@ class EquipmentTable:
 
     def ExportEquipmentTable(self, wb):
         ws_equipment = wb.create_sheet("Оборудование", 0)
-        ws_equipment.merge_cells('A1:F1')
-        cell_title = ws_equipment['A1']
-        cell_title.value = 'Оборудование'
-        column_headers = ["№ помещения", "Тип прибора", "Загрузка прибора",
-                          "Мощность прибора, Вт", "Кол-во", "Q прибор, Вт"]
-        for col_num, header in enumerate(column_headers, 1):
-            header_cell = ws_equipment.cell(row=2, column=col_num)
-            header_cell.value = header
         for row in range(self.EquipmentTableWidget.rowCount()):
             for col in range(self.EquipmentTableWidget.columnCount()):
                 widget = self.EquipmentTableWidget.cellWidget(row, col)
                 if widget:
-                    value = widget.currentText() if isinstance(
-                        widget, QComboBox) else str(widget.value())
+                    if col in [0, 4]:
+                        value = int(widget.value())
+                    elif col == 1:
+                        value = str(widget.currentText())
+                    elif col in [2, 3]:
+                        value = float(widget.value())
                 else:
                     item = self.EquipmentTableWidget.item(row, col)
                     if item:
-                        value = item.text()
-                ws_equipment.cell(row=row+3, column=col+1, value=value)
+                        value = float(item.text())
+                ws_equipment.cell(row=row+1, column=col+1, value=value)
 
     def ImportEquipmentTable(self, wb):
         try:
@@ -157,7 +153,7 @@ class EquipmentTable:
             for row in range(1, ws_equipment.max_row + 1):
                 if row > 1:
                     self.AddEquipmentRow()
-                for col, data_type in zip(range(1, 6), [int, str, float, int, int]): # noqa E501
+                for col, data_type in zip(range(1, 7), [int, str, float, (int, float), int, (int, float)]): # noqa E501
                     cell_value = ws_equipment.cell(row=row, column=col).value
                     if not isinstance(cell_value, data_type):
                         QMessageBox.warning(
