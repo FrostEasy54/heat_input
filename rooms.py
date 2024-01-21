@@ -89,7 +89,7 @@ class RoomsTable():
                     self.RoomsTableWidget.cellWidget(
                         room_row, col).setMinimum(18)
                     self.RoomsTableWidget.cellWidget(
-                        room_row, col).setMaximum(26)
+                        room_row, col).setMaximum(24)
                 elif self.SeasonComboBox.currentText() == 'Теплый':
                     self.RoomsTableWidget.cellWidget(
                         room_row, col).setMinimum(20)
@@ -153,7 +153,7 @@ class RoomsTable():
                     float_heat_input_value = float(heat_input_value)
                     summ_of_heat_input += float_heat_input_value
                     item = QTableWidgetItem()
-                    item.setData(0, f'{summ_of_heat_input}')
+                    item.setData(0, f'{round(summ_of_heat_input, 3)}')
                     self.RoomsTableWidget.setItem(room_row, 5, item)
                 elif int_room_number_item not in set(total_people_room_number):
                     self.tabWidget.setCurrentWidget(self.PeopleWidget)
@@ -218,7 +218,7 @@ class RoomsTable():
                     float_heat_input_value = float(heat_input_value)
                     summ_of_heat_input += float_heat_input_value
                     item = QTableWidgetItem()
-                    item.setData(0, f'{summ_of_heat_input}')
+                    item.setData(0, f'{round(summ_of_heat_input, 3)}')
                     self.RoomsTableWidget.setItem(room_row, 6, item)
                 elif int_room_number_item not in set(total_equipment_room_number):  # noqa E501
                     self.tabWidget.setCurrentWidget(self.EquipmentWidget)
@@ -282,7 +282,7 @@ class RoomsTable():
                     float_heat_input_value = float(heat_input_value)
                     summ_of_heat_input += float_heat_input_value
                     item = QTableWidgetItem()
-                    item.setData(0, f'{summ_of_heat_input}')
+                    item.setData(0, f'{round(summ_of_heat_input, 3)}')
                     self.RoomsTableWidget.setItem(room_row, 7, item)
                 elif int_room_number_item not in set(total_lamps_room_number):
                     self.tabWidget.setCurrentWidget(self.LampsWidget)
